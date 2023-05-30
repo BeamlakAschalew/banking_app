@@ -2,8 +2,6 @@
 #include <string>
 #include <cmath>
 
-
-
 using namespace std;
 
 int main() {
@@ -13,73 +11,90 @@ int main() {
     string names[maxAccounts];
     double balances[maxAccounts];
     string passwords[maxAccounts];
-    int accountNumbers[maxAccounts];
+    int accountNumbers[maxAccounts] = {50000};
     string secretCodes[maxAccounts];
-
     int userChoice, currentAccountIndex = 0;
-
-    string characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    string randomString = "";
+    string tempPass = "";
 
 
 
-    while (true) {
+   menuIterator: while (true) {
+        system("cls");
         cout << "1. Create an account";
         cin >> userChoice;
 
 
         switch (userChoice) {
-        case 1:
-            system("cls");
-            cout << "Great you wanted to create an account! Follow the following procedures." << endl;
+            case 1: {
+                system("cls");
+                cout << "Great you wanted to create an account! Follow the following procedures." << endl;
 
-            cout << "Enter your name: " << endl;
-            getline(cin.ignore(), names[currentAccountIndex]);
+                cout << "Enter your name: " << endl;
+                getline(cin.ignore(), names[currentAccountIndex]);
 
-            //TODO: check for appropriate password length
-            cout << "Enter the password for your account: " << endl;
-            getline(cin.ignore(), passwords[currentAccountIndex]);
+                passRetry:
+                cout << "Enter the password for your account: " << endl;
+                getline(cin.ignore(), tempPass);
 
-            accountNumbers[currentAccountIndex] = rand() % 90000 + 10000;
-            balances[currentAccountIndex] = 0;
+                if (tempPass.length() < 7) {
+                    cout << "The password entered is too short, try again.\n";
+                    goto passRetry;
+                }
 
-            int sum;
+                balances[currentAccountIndex] = 0;
 
-            // for (int i = 0; i < 5; ++i) {
-            //     int randomIndex = rand() % characters.length();
-            //     randomString += characters[randomIndex];
-            // }
-            
-            secretCodes[currentAccountIndex] = "";
 
-            // int currentRand = rand() % 90000 + 10000;
-            // bool uniqueFound = false;
+                int currentRand = rand() % 90000 + 10000;
+                bool uniqueFound = false;
 
-            // while (!uniqueFound) {
-            //     for (int i = 0; i < maxAccounts; i++) {
-            //         if (accountNumbers[i] != currentRand) {
-            //             accountNumbers[currentAccountIndex] = currentRand;
-            //             uniqueFound = true;
-            //         }
+                for (int i = 0; i < maxAccounts; i++) {
+                    if (accountNumbers[i] != currentRand) {
+                        accountNumbers[currentAccountIndex] = currentRand;
+                        uniqueFound = true;
+                    }
 
-            //     // while (!uniqueFound) {
-            //     //     int currentRand = rand() % 90000 + 10000;
+                    while (!uniqueFound) {
+                        currentRand = rand() % 90000 + 10000;
+                        cout << currentRand;
 
-            //     //     if (accountNumbers[i] != currentRand) {
-            //     //         accountNumbers[currentAccountIndex] = currentRand;
-            //     //         uniqueFound = true;
-            //     //     }
-            //     // }
-            //     }
-            // }
+                        if (accountNumbers[i] != currentRand) {
+                            accountNumbers[currentAccountIndex] = currentRand;
+                            uniqueFound = true;
+                        }
+                    }
+                }
+                
 
-            
+                cout << "Your account number is: " << accountNumbers[currentAccountIndex] << endl;
+                cout << "Your account balance is: " << balances[currentAccountIndex] << endl;
+               
+                cout << "You're " << currentAccountIndex + 1 << " user\n";
 
+                currentAccountIndex++;
+                
+
+                cout << "If you would like to go to main menu click \"Y\" else if you want to quit click \"N\"" << endl;
+
+                char menuChoice;
+                cin >> menuChoice;
+
+                if (menuChoice == 'Y' || menuChoice == 'y') {
+                    goto menuIterator;
+                } else {
+                    break;
+                }
+
+            }
 
             break;
-        
-        default:
-            break;
+
+            case 2: {
+
+            }
+                
+
+            default:
+                break;
         }
 
         cout << names[0];
