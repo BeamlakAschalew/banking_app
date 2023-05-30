@@ -2,11 +2,10 @@
 #include <string>
 #include <cmath>
 
-
-
 using namespace std;
 
-int main() {
+int main()
+{
 
     const int maxAccounts = 50;
 
@@ -21,14 +20,13 @@ int main() {
     string characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     string randomString = "";
 
-
-
-    while (true) {
+    while (true)
+    {
         cout << "1. Create an account";
         cin >> userChoice;
 
-
-        switch (userChoice) {
+        switch (userChoice)
+        {
         case 1:
             system("cls");
             cout << "Great you wanted to create an account! Follow the following procedures." << endl;
@@ -36,12 +34,13 @@ int main() {
             cout << "Enter your name: " << endl;
             getline(cin.ignore(), names[currentAccountIndex]);
 
-            //TODO: check for appropriate password length
+            // TODO: check for appropriate password length
             cout << "Enter the password for your account: " << endl;
             getline(cin.ignore(), passwords[currentAccountIndex]);
 
             accountNumbers[currentAccountIndex] = rand() % 90000 + 10000;
             balances[currentAccountIndex] = 0;
+            // hello
 
             int sum;
 
@@ -49,7 +48,7 @@ int main() {
             //     int randomIndex = rand() % characters.length();
             //     randomString += characters[randomIndex];
             // }
-            
+
             secretCodes[currentAccountIndex] = "";
 
             // int currentRand = rand() % 90000 + 10000;
@@ -73,11 +72,8 @@ int main() {
             //     }
             // }
 
-            
-
-
             break;
-        
+
         default:
             break;
         }
