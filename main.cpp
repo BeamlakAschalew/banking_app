@@ -1,3 +1,7 @@
+// Use at(i) for code saftey
+// Avoid goto as much
+
+
 #include <iostream>
 #include <string>
 #include <cmath>
@@ -8,43 +12,50 @@ int main() {
 
     const int maxAccounts = 50;
 
-    string names[maxAccounts];
+    string names[maxAccounts], passwords[maxAccounts], tempPass = "";
     double balances[maxAccounts];
-    string passwords[maxAccounts];
-    int accountNumbers[maxAccounts] = {50000};
-    string secretCodes[maxAccounts];
-    int userChoice, currentAccountIndex = 0;
-    string tempPass = "";
+    bool navigateMenu = true;
+    int userChoice, currentAccountIndex = 0, accountNumbers[maxAccounts];
 
 
 
-   menuIterator: while (true) {
+    menuIterator: while (navigateMenu) {
         system("cls");
-        cout << "1. Create an account";
+           cout << ".______        ___      .__   __.  __  ___  __  .__   __.   _______         ___      .______   .______   \n"
+                "|   _  \\      /   \\     |  \\ |  | |  |/  / |  | |  \\ |  |  /  _____|       /   \\     |   _  \\  |   _  \\  \n"
+                "|  |_)  |    /  ^  \\    |   \\|  | |  '  /  |  | |   \\|  | |  |  __        /  ^  \\    |  |_)  | |  |_)  | \n"
+                "|   _  <    /  /_\\  \\   |  . `  | |    <   |  | |  . `  | |  | |_ |      /  /_\\  \\   |   ___/  |   ___/  \n"
+                "|  |_)  |  /  _____  \\  |  |\\   | |  .  \\  |  | |  |\\   | |  |__| |     /  _____  \\  |  |      |  |      \n"
+                "|______/  /__/     \\__\\ |__| \\__| |__|\\__\\ |__| |__| \\__|  \\______|    /__/     \\__\\ | _|      | _|      \n";
+        cout << "1. Create an account: \n";
+        cout << "2. Deposit money into your account: \n";
         cin >> userChoice;
 
 
         switch (userChoice) {
             case 1: {
                 system("cls");
-                cout << "Great you wanted to create an account! Follow the following procedures." << endl;
+                cout << "Great. You wanted to create an account! Follow the following procedures." << endl;
 
                 cout << "Enter your name: " << endl;
                 getline(cin.ignore(), names[currentAccountIndex]);
 
                 passRetry:
                 cout << "Enter the password for your account: " << endl;
-                getline(cin.ignore(), tempPass);
+                getline(cin, tempPass);
 
                 if (tempPass.length() < 7) {
                     cout << "The password entered is too short, try again.\n";
                     goto passRetry;
+                } else {
+                    passwords[currentAccountIndex] = tempPass;
+                    cout << "pass: "<< passwords[currentAccountIndex] << endl;
                 }
 
                 balances[currentAccountIndex] = 0;
 
 
-                int currentRand = rand() % 90000 + 10000;
+                int currentRand = rand() % 100000;
                 bool uniqueFound = false;
 
                 for (int i = 0; i < maxAccounts; i++) {
@@ -54,7 +65,7 @@ int main() {
                     }
 
                     while (!uniqueFound) {
-                        currentRand = rand() % 90000 + 10000;
+                        currentRand = rand() % 100000;
                         cout << currentRand;
 
                         if (accountNumbers[i] != currentRand) {
@@ -79,16 +90,101 @@ int main() {
                 cin >> menuChoice;
 
                 if (menuChoice == 'Y' || menuChoice == 'y') {
-                    goto menuIterator;
+                    continue;
+                } else if (menuChoice == 'N' || menuChoice == 'n') {
+                    navigateMenu = false;
                 } else {
-                    break;
+                    cout << "Wrong choice option entered!" << endl;
+                    continue;
                 }
+
 
             }
 
             break;
 
             case 2: {
+                system("cls");
+                cout << "Deposit into your account: \n";
+
+                bool accountFound = false;
+                int accountIndex;
+
+                while (accountFound == 0) {
+                    cout << "Enter your account number: \n";
+
+                    int accountNumber;
+
+                    cin >> accountNumber;
+
+                    for (int i = 0; i < maxAccounts; i++) {
+                        if (accountNumbers[i] == accountNumber) {
+                            accountFound = true;
+                            accountIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (accountFound == 0) {
+                        cout << "The account number you entered is not found, try again.\n";
+                    }
+                }
+
+                string accountPassword; bool passwordValidated = false; int passwordTries = 4;
+
+
+                cout << "Welcome back, " << names[accountIndex] << "!\n";
+                while (!passwordValidated && passwordTries > 0) {
+                    cout << "Please enter the password of your account: \n";
+                    getline(cin.ignore(), accountPassword);
+
+                    if (accountPassword == passwords[accountIndex]) {
+                        passwordValidated = true;
+
+                    } else {
+                        cout << "The password you entered is incorrect!\n";
+                        --passwordTries;
+                        if (passwordTries >= 1)
+                            cout << "You have " << passwordTries << " trials left, try again.\n";
+                        else
+                            break;
+                    }
+                }
+
+                char choice;
+
+                if (passwordValidated) {
+                    amountIterator: double moneyAmount;
+                    cout << "Enter the amount of money you want to deposit: ";
+                    cin >> moneyAmount;
+
+                    if (moneyAmount >= 0.1) {
+                        balances[accountIndex] += moneyAmount;
+                        cout << "You have successfully deposited " << moneyAmount << "birr into your account.\nYour current balance: " << balances[accountIndex] << "birr\nClick 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
+                        cin >> choice;
+
+                        if (choice == 'Y' || choice == 'y') {
+                            goto menuIterator;
+                        } else {
+                            break;
+                        }
+
+                    } else {
+                        cout << "The amount you entered is too low, try again.\n";
+                        goto amountIterator;
+                    }
+                } else {
+
+                    cout << "\nYou have entered incorrect password too many times so we can't grant deposition action now. Click 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
+                    cin >> choice;
+
+                    if (choice == 'Y' || choice == 'y') {
+                        goto menuIterator;
+                    } else {
+                        break;
+                    }
+                }
+
 
             }
                 
@@ -103,3 +199,4 @@ int main() {
 
     return 0;
 }
+
