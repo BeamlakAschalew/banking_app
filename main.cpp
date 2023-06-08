@@ -40,6 +40,7 @@ int main() {
         cout << "3. Withdraw\n";
         cout << "4. Transfer\n";
         cout << "5. View past transactions\n";
+        cout << "6. Edit Account details\n";
         cin >> userChoice;
 
         switch (userChoice) {
@@ -362,20 +363,18 @@ int main() {
                 char choice;
 
                 if (passwordValidated) {
-                    transferAmountIterator: double moneyAmount;
+                    double moneyAmount;
                     cout << "Welcome back, " << names[accountIndex] << "!\n";
 
                     bool receiverAccountFound = false;
                     int receiverAccountIndex;
 
                     while (receiverAccountFound == 0) {
-                        cout << "Enter the receiver's account number: \n";
-
+                        cout << "Enter the receiver's account number: ";
                         int receiverAccountNumber;
-
                         cin >> receiverAccountNumber;
 
-                        for (int i = 0; i < maxAccounts; i++) {
+                        for (int i = 0; i < currentAccountIndex; i++) {
                             if (accountNumbers[i] == receiverAccountNumber) {
                                 receiverAccountFound = true;
                                 receiverAccountIndex = i;
@@ -387,7 +386,7 @@ int main() {
                             cout << "The account number you entered is not found, try again.\n";
                         }
                     }
-                    cout << "Enter the amount of money you want to transfer: ";
+                    transferAmountIterator: cout << "Enter the amount of money you want to transfer: ";
                     cin >> moneyAmount;
 
                     if ((balances[accountIndex] - moneyAmount) <= 25) {
@@ -451,12 +450,11 @@ int main() {
             case 5: {
                 system("cls");
                 cout << "Past transactions:\n";
-                cout << "Enter your account number";
 
                 bool accountFound = false;
                 int accountIndex;
 
-                while (accountFound == 0) {
+                while (!accountFound) {
                     cout << "Enter your account number: \n";
 
                     int accountNumber;
@@ -479,7 +477,6 @@ int main() {
                 string accountPassword; bool passwordValidated = false; int passwordTries = 4;
 
 
-                cout << "Welcome back, " << names[accountIndex] << "!\n";
                 while (!passwordValidated && passwordTries > 0) {
                     cout << "Please enter the password of your account: \n";
                     getline(cin.ignore(), accountPassword);
@@ -504,6 +501,8 @@ int main() {
                     int typeWidth = 0;
                     int amountWidth = 0;
                     int dateWidth = 0;
+
+                    cout << "Welcome back, " << names[accountIndex] << "!\n";
 
                     // Calculate maximum column widths
                     for (int i = 0; i < currentTransactionIndex; i++) {
@@ -559,7 +558,110 @@ int main() {
             }
             break;
 
+            case 6: {
 
+                system("cls");
+                cout << "Modify account details:\n";
+
+                bool accountFound = false;
+                int accountIndex;
+
+                while (!accountFound) {
+                    cout << "Enter your account number: \n";
+
+                    int accountNumber;
+
+                    cin >> accountNumber;
+
+                    for (int i = 0; i < maxAccounts; i++) {
+                        if (accountNumbers[i] == accountNumber) {
+                            accountFound = true;
+                            accountIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (accountFound == 0) {
+                        cout << "The account number you entered is not found, try again.\n";
+                    }
+                }
+
+                string accountPassword; bool passwordValidated = false; int passwordTries = 4;
+
+
+                while (!passwordValidated && passwordTries > 0) {
+                    cout << "Please enter the password of your account: \n";
+                    getline(cin.ignore(), accountPassword);
+
+                    if (accountPassword == passwords[accountIndex]) {
+                        passwordValidated = true;
+
+                    } else {
+                        cout << "The password you entered is incorrect!\n";
+                        --passwordTries;
+                        if (passwordTries >= 1)
+                            cout << "You have " << passwordTries << " trials left, try again.\n";
+                        else
+                            break;
+                    }
+                }
+
+                char choice;
+
+                if (passwordValidated) {
+                    const int columnWidth = 15;
+                    int typeWidth = 0;
+                    int amountWidth = 0;
+                    int dateWidth = 0;
+
+                   settingsIterator: cout << "Welcome back, " << names[accountIndex] << "!\n";
+                    cout << "Account Number:" << accountNumbers[accountIndex] << endl;
+                    cout << "1. Account Name:" << names[accountIndex] << endl;
+                    cout << "2. Account Password: " << passwords[accountIndex] << endl << endl;
+
+                    cout << "Click [1] to rename your account name or [2] to change your password. Click any other key to exit account settings\n";
+                    cin >> choice;
+
+                    if (choice == '1') {
+                        system("cls");
+                        string name;
+                        cout << "Enter your new account name:";
+                        getline(cin.ignore(), name);
+
+                        names[accountIndex] = name;
+                        cout << "Your account name has been renamed successfully!\n";
+                        goto settingsIterator;
+                    } else if (choice == '2') {
+                        system("cls");
+                        settingsPassRetry:
+                        cout << "Enter the password for your account: ";
+                        getline(cin, tempPass);
+
+                        if (tempPass.length() < 7) {
+                            cout << "The password entered is too short, try again.\n";
+                            goto settingsPassRetry;
+                        } else {
+                            passwords[accountIndex] = tempPass;
+                            cout << "Your password has been changed successfully!\n";
+                            goto settingsIterator;
+                        }
+                    }
+
+                } else {
+
+                    cout << "\nYou have entered incorrect password too many times so we can't grant deposition action now. Click 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
+                    cin >> choice;
+
+                    if (choice == 'Y' || choice == 'y') {
+                        goto menuIterator;
+                    } else {
+                        break;
+                    }
+                }
+
+
+                break;
+            }
 
 
                 
