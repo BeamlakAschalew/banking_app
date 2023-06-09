@@ -7,6 +7,8 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <random>
+#include <windows.h>
 
 using namespace std;
 
@@ -15,6 +17,7 @@ int main() {
     const int maxAccounts = 50;
     const int maxTransactions = 500;
 
+    string menuOptions[7] = {"[1] Create an account", "[2] Deposit money into your account", "[3] Withdraw", "[4] Transfer", "[5] View past transactions", "[6] Edit Account details", "[7] Currency rates and currency converter"};
     string names[maxAccounts], passwords[maxAccounts], tempPass = "";
     double balances[maxAccounts];
     bool navigateMenu = true;
@@ -24,6 +27,9 @@ int main() {
 
     int transactionAccountNumbers[maxTransactions] = {0}; double transactionMoneyAmount[maxTransactions]; string transactionType[maxTransactions];
     string transactionDates[maxTransactions];
+
+    double rates[3] = {54.4, 64.7, 58.3,};
+    string currencyNames[3] = {"USD to Birr", "Pound to Birr", "Euro to Birr",};
 
 
     menuIterator: while (navigateMenu) {
@@ -35,12 +41,18 @@ int main() {
                 "|   _  <    /  /_\\  \\   |  . `  | |    <   |  | |  . `  | |  | |_ |      /  /_\\  \\   |   ___/  |   ___/  \n"
                 "|  |_)  |  /  _____  \\  |  |\\   | |  .  \\  |  | |  |\\   | |  |__| |     /  _____  \\  |  |      |  |      \n"
                 "|______/  /__/     \\__\\ |__| \\__| |__|\\__\\ |__| |__| \\__|  \\______|    /__/     \\__\\ | _|      | _|      \n";
-        cout << "1. Create an account: \n";
-        cout << "2. Deposit money into your account: \n";
-        cout << "3. Withdraw\n";
-        cout << "4. Transfer\n";
-        cout << "5. View past transactions\n";
-        cout << "6. Edit Account details\n";
+
+
+        cout << endl << endl;
+
+        cout << string(5, ' ') + "+" << string(48, '-') << "+\n";
+        for (int i = 0; i < 7; i++) {
+            cout << string(5, ' ') + "|   " << setw(45) << left << menuOptions[i] << "|\n";
+            (i < 6) ? cout << string(5, ' ') + string(50, '-') << endl : cout << "" ;
+        }
+        cout << string(5, ' ') + "+" << string(48, '-') << "+\n\n\n";
+        cout << "Choose the action you want, click from 1 upto 7 respectively for each action: ";
+
         cin >> userChoice;
 
         switch (userChoice) {
@@ -65,8 +77,16 @@ int main() {
 
                 balances[currentAccountIndex] = 0;
 
+                random_device rd;
+                mt19937 engine(rd());
+                uniform_int_distribution<int> distribution(1, 99999);
+                int randomGenerated = distribution(engine), currentRand;
+                stringstream  ss;
 
-                int currentRand = rand() % 100000;
+                int leadingZeros = 5 - to_string(randomGenerated).length();
+                    ss << string(leadingZeros, '0') << randomGenerated;
+                    currentRand = stoi(ss.str());
+
                 bool uniqueFound = false;
 
                 for (int i = 0; i < maxAccounts; i++) {
@@ -76,8 +96,10 @@ int main() {
                     }
 
                     while (!uniqueFound) {
-                        currentRand = rand() % 100000;
-                        cout << currentRand;
+                        randomGenerated = distribution(engine);
+                        leadingZeros = 5 - std::to_string(randomGenerated).length();
+                        ss << string(leadingZeros, '0') << randomGenerated;
+                        currentRand = stoi(ss.str());
 
                         if (accountNumbers[i] != currentRand) {
                             accountNumbers[currentAccountIndex] = currentRand;
@@ -521,11 +543,21 @@ int main() {
                     cout << "|" << setw(typeWidth + 7) << right << "Transaction Type" << "|" << setw(amountWidth) << right << "Amount" << "|" << setw(dateWidth) << right << "Date" << "|\n";
                     cout << "+" << string(typeWidth + 7, '-') << "+" << string(amountWidth, '-') << "+" << string(dateWidth, '-') << "+\n";
 
+                    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
                     for (int i = 0; i < currentTransactionIndex; i++) {
                         if (transactionAccountNumbers[i] == accountNumbers[accountIndex]) {
-                            cout << "|" << setw(typeWidth + 7) << left << transactionType[i] << "|"
-                                      << setw(amountWidth) << right << transactionMoneyAmount[i] << "|"
-                                      << setw(dateWidth) << left << transactionDates[i] << "|\n";
+                            cout << "|" << setw(typeWidth + 7) << left << transactionType[i] << "|";
+                                    if (transactionMoneyAmount[i] < 0) {
+                                        SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+                                    } else {
+                                        SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+                                    }
+                                    cout  << setw(amountWidth) << right << transactionMoneyAmount[i];
+                            SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+                                    cout << "|";
+
+                                    cout  << setw(dateWidth) << left << transactionDates[i] << "|\n";
                         }
                     }
 
@@ -645,6 +677,8 @@ int main() {
                             cout << "Your password has been changed successfully!\n";
                             goto settingsIterator;
                         }
+                    } else {
+                        goto menuIterator;
                     }
 
                 } else {
@@ -658,10 +692,22 @@ int main() {
                         break;
                     }
                 }
-
-
-                break;
             }
+            break;
+
+            case 7: {
+                system("cls");
+                cout << "Current currency rates:\n";
+
+
+
+
+
+
+
+
+            }
+            break;
 
 
                 
