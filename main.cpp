@@ -28,8 +28,9 @@ int main() {
     int transactionAccountNumbers[maxTransactions] = {0}; double transactionMoneyAmount[maxTransactions]; string transactionType[maxTransactions];
     string transactionDates[maxTransactions];
 
-    double rates[3] = {54.4, 64.7, 58.3,};
-    string currencyNames[3] = {"USD to Birr", "Pound to Birr", "Euro to Birr",};
+    const int numberOfCurrencies = 3;
+    double rates[numberOfCurrencies] = {54.4, 64.7, 58.3,};
+    string currencyNames[numberOfCurrencies] = {"USD to Birr", "Pound to Birr", "Euro to Birr",};
 
 
     menuIterator: while (navigateMenu) {
@@ -89,7 +90,7 @@ int main() {
 
                 bool uniqueFound = false;
 
-                for (int i = 0; i < maxAccounts; i++) {
+                for (int i = 0; i < currentAccountIndex + 1; i++) {
                     if (accountNumbers[i] != currentRand) {
                         accountNumbers[currentAccountIndex] = currentRand;
                         uniqueFound = true;
@@ -699,7 +700,49 @@ int main() {
                 system("cls");
                 cout << "Current currency rates:\n";
 
+                cout << "+" << string(20, '-') << "+" << string(20, '-') << "+\n";
+                cout << "|   " << setw(17) << left << "Currency" << "|   " << setw(17) << left << "Birr" << "|\n";
+                cout << "+" << string(20, '-') << "+" << string(20, '-') << "+\n";
 
+                for (int i = 0; i < numberOfCurrencies; i++) {
+                        cout << "|   " << setw(17) << left << currencyNames[i] << "|   " << setw(17) << left << rates[i] << "|\n";
+                }
+
+                cout << "+" << string(20, '-') << "+" << string(20, '-') << "+\n\n\n";
+
+                char choice;
+                cout << "If you want to convert currency click [C], if you want to go to main menu click [M] else if you want to quit press any key: ";
+                cin >> choice;
+
+                if (choice == 'C' || choice == 'c') {
+                    system("cls");
+                    int currencyFrom, currencyTo;
+                    double amount, toBirr, finalResult;
+
+                    cout << "Choose the currency you want to convert from:\n";
+
+                    cout << "[1] US Dollar\n";
+                    cout << "[2] Pound\n";
+                    cout << "[3] Euro\n";
+                    cout << "[4] Birr\n\n";
+                    cin >> currencyFrom;
+
+                    cout << "Choose the currency you want to convert to:\n";
+
+                    cout << "[1] US Dollar\n";
+                    cout << "[2] Pound\n";
+                    cout << "[3] Euro\n";
+                    cout << "[4] Birr\n\n";
+
+                    cin >> currencyTo;
+
+                    cout << "Enter the amount of money you want to convert: ";
+                    cin >> amount;
+
+
+                    toBirr = amount * rates[currencyFrom - 1];
+
+                }
 
 
 
