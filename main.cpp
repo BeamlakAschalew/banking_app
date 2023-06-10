@@ -17,7 +17,7 @@ int main() {
     const int maxAccounts = 50;
     const int maxTransactions = 500;
 
-    string menuOptions[7] = {"[1] Create an account", "[2] Deposit money into your account", "[3] Withdraw", "[4] Transfer", "[5] View past transactions", "[6] Edit Account details", "[7] Currency rates and currency converter"};
+    string menuOptions[9] = {"[1] Create an account", "[2] Deposit money into your account", "[3] Withdraw", "[4] Transfer", "[5] View past transactions", "[6] Edit Account details", "[7] Currency rates and currency converter", "[8] View system transaction log (Admin only)", "[9] Setup recurring payments"};
     string names[maxAccounts], passwords[maxAccounts], tempPass = "";
     double balances[maxAccounts];
     bool navigateMenu = true;
@@ -32,8 +32,35 @@ int main() {
     double rates[numberOfCurrencies] = {54.4, 64.7, 58.3, 1.0};
     string currencyNames[numberOfCurrencies] = {"USD to Birr", "Pound to Birr", "Euro to Birr",};
 
+    const double interestRate = 7.0;
+
+    string adminPassword = "Strngpass";
+
 
     menuIterator: while (navigateMenu) {
+
+    time_t currentTime = time(0);
+
+    // Convert the current time to a struct tm
+    tm* localTime = localtime(&currentTime);
+
+    // Get the day of the week as an integer (0 - Sunday, 1 - Monday, ...)
+    int dayOfWeek = localTime->tm_wday;
+
+    // Array of day names
+    const char* dayNames[] = {
+            "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+    };
+
+    // Get the day name based on the day of the week
+    string currentDayName = dayNames[dayOfWeek];
+
+    if (currentDayName == "Saturday") {
+        for (int i = 0; i < currentAccountIndex; i++) {
+            balances[i] += (balances[i] * (interestRate / 100));
+        }
+    }
+
 
         system("cls");
            cout << ".______        ___      .__   __.  __  ___  __  .__   __.   _______         ___      .______   .______   \n"
@@ -47,9 +74,9 @@ int main() {
         cout << endl << endl;
 
         cout << string(5, ' ') + "+" << string(48, '-') << "+\n";
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 9; i++) {
             cout << string(5, ' ') + "|   " << setw(45) << left << menuOptions[i] << "|\n";
-            (i < 6) ? cout << string(5, ' ') + string(50, '-') << endl : cout << "" ;
+            (i < 8) ? cout << string(5, ' ') + string(50, '-') << endl : cout << "" ;
         }
         cout << string(5, ' ') + "+" << string(48, '-') << "+\n\n\n";
         cout << "Choose the action you want, click from 1 upto 7 respectively for each action: ";
@@ -213,7 +240,7 @@ int main() {
                         ossTime << put_time(localTime, "%I:%M %p");
                         dateTimeNow = ossDate.str() + ossTime.str();
 
-                        transactionMoneyAmount[currentTransactionIndex] = moneyAmount;
+                        transactionMoneyAmount[currentTransactionIndex] = convertedAmount;
                         transactionAccountNumbers[currentTransactionIndex] = accountNumbers[accountIndex];
                         transactionType[currentTransactionIndex] = "Deposit";
                         transactionDates[currentTransactionIndex] = dateTimeNow;
@@ -771,6 +798,94 @@ int main() {
             }
             break;
 
+            case 8: {
+                system("cls");
+
+                bool passwordValidated = false; int passwordTries = 4;
+                string adminPasswordInput;
+                cout << "Enter administrator password: ";
+
+
+                while (!passwordValidated && passwordTries > 0) {
+                    cout << "Please enter the password of your account: \n";
+                    getline(cin.ignore(), adminPasswordInput);
+
+                    if (adminPassword == adminPasswordInput) {
+                        passwordValidated = true;
+
+                    } else {
+                        cout << "The password you entered is incorrect!\n";
+                        --passwordTries;
+                        if (passwordTries >= 1)
+                            cout << "You have " << passwordTries << " trials left, try again.\n";
+                        else
+                            break;
+                    }
+                }
+
+                char choice;
+
+                if (passwordValidated) {
+
+                    const int columnWidth = 15;
+                    int typeWidth = 0, amountWidth = 0, dateWidth = 0, accountWidth = 0;
+
+                    cout << "Welcome back, Admin!\n";
+
+                    // Calculate maximum column widths
+                    for (int i = 0; i < currentTransactionIndex; i++) {
+                        typeWidth = max(typeWidth, static_cast<int>(transactionType[i].length()));
+                        amountWidth = max(amountWidth, static_cast<int>(to_string(transactionMoneyAmount[i]).length()));
+                        dateWidth = max(dateWidth, static_cast<int>(transactionDates[i].length()));
+                        accountWidth = max(accountWidth, static_cast<int>(to_string(transactionAccountNumbers[i]).length()));
+                    }
+
+                    // Add some padding to the maximum widths
+                    typeWidth += 2;
+                    amountWidth += 2;
+                    dateWidth += 2;
+                    accountWidth += 2;
+
+                    // Print table header
+                    cout << "+" << string(typeWidth + 7, '-') << "+" << string(accountWidth + 7, '-') << "+" << string(amountWidth, '-') << "+" << string(dateWidth, '-') << "+\n";
+                    cout << "|" << setw(typeWidth + 7) << right << "Transaction Type" << "|" << setw(accountWidth) << right << "Account Number" << "|" <<  setw(amountWidth) << right << "Amount" << "|" << setw(dateWidth) << right << "Date" << "|\n";
+                    cout << "+" << string(typeWidth + 7, '-') << "+" << string(accountWidth + 7, '-') << "+" << string(amountWidth, '-') << "+" << string(dateWidth, '-') << "+\n";
+
+
+                    for (int i = 0; i < currentTransactionIndex; i++) {
+                            cout << "|" << setw(typeWidth + 7) << left << transactionType[i] << "|" << setw(accountWidth + 7) << right << transactionAccountNumbers[i] << "|" << setw(amountWidth) << right << transactionMoneyAmount[i] << "|" << setw(dateWidth) << left << transactionDates[i] << "|\n";
+                    }
+
+                    // Print table footer
+                    cout << "+" << string(typeWidth + 7, '-') << "+" << string(accountWidth + 7, '-') << "+" << string(amountWidth, '-') << "+" << string(dateWidth, '-') << "+\n";
+
+                    cout << "Click 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
+                    cin >> choice;
+
+                    if (choice == 'Y' || choice == 'y') {
+                        goto menuIterator;
+                    } else {
+                        exit;
+                    }
+
+
+                } else {
+
+                    cout << "\nYou have entered incorrect password too many times so we can't grant deposition action now. Click 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
+                    cin >> choice;
+
+                    if (choice == 'Y' || choice == 'y') {
+                        goto menuIterator;
+                    } else {
+                        break;
+                    }
+                }
+
+
+
+            }
+
+            break;
 
                 
 
