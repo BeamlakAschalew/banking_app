@@ -1,9 +1,3 @@
-// Use at(i) for code saftey
-// Avoid goto as much
-// red color for withdraw transaction in the table
-// use bettr randomizer
-
-
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -14,52 +8,167 @@ using namespace std;
 
 int main() {
 
-    const int maxAccounts = 50;
-    const int maxTransactions = 500;
+    // Array Sizes
+    const int maxAccounts = 500;
+    const int maxTransactions = 1000;
+    const int maxRecurringTransactions = 1000;
+    const int menuArraySize = 9;
+    const int numberOfCurrencies = 4;
 
-    string menuOptions[9] = {"[1] Create an account", "[2] Deposit money into your account", "[3] Withdraw", "[4] Transfer", "[5] View past transactions", "[6] Edit Account details", "[7] Currency rates and currency converter", "[8] View system transaction log (Admin only)", "[9] Setup recurring payments"};
-    string names[maxAccounts], passwords[maxAccounts], tempPass = "";
+    // Program constants
+    const double interestRate = 7.0;
+
+    // Menu items array
+    string menuOptions[menuArraySize] = {"[1] Create an account", "[2] Deposit money into your account", "[3] Withdraw", "[4] Transfer", "[5] View past transactions", "[6] Edit Account details", "[7] Currency rates and currency converter", "[8] View system transaction log (Admin only)", "[9] Setup recurring payments"};
+
+    // Account related arrays
+    string names[maxAccounts], passwords[maxAccounts];
     double balances[maxAccounts];
-    bool navigateMenu = true;
-    int userChoice, currentAccountIndex = 0, accountNumbers[maxAccounts], currentTransactionIndex = 0;
-    time_t currentTime;
+    int accountNumbers[maxAccounts];
 
-
+    // Transaction related arrays
     int transactionAccountNumbers[maxTransactions] = {0}; double transactionMoneyAmount[maxTransactions]; string transactionType[maxTransactions];
     string transactionDates[maxTransactions];
 
-    const int numberOfCurrencies = 4;
+    // Recurring transaction related arrays
+    int recurringPaymentFrom[maxRecurringTransactions], recurringPaymentTo[maxRecurringTransactions], recurringPaymentFrequency[maxRecurringTransactions], recurringPaymentTime[maxRecurringTransactions];
+    double recurringMoneyAmount[maxRecurringTransactions];
+
+
+    // Currency related arrays
     double rates[numberOfCurrencies] = {54.4, 64.7, 58.3, 1.0};
     string currencyNames[numberOfCurrencies] = {"USD to Birr", "Pound to Birr", "Euro to Birr",};
 
-    const double interestRate = 7.0;
+    // Current position integers
+    int currentAccountIndex = 0, currentTransactionIndex = 0, currentRecurringIndex = 0;
 
+    // Other variables
+    string tempPass;
+    int userChoice;
+    bool navigateMenu = true;
     string adminPassword = "Strngpass";
 
 
     menuIterator: while (navigateMenu) {
 
-    time_t currentTime = time(0);
+        time_t currentTime = time(0);
 
-    // Convert the current time to a struct tm
-    tm* localTime = localtime(&currentTime);
+        // Convert the current time to a struct tm
+        tm* localTime = localtime(&currentTime);
 
-    // Get the day of the week as an integer (0 - Sunday, 1 - Monday, ...)
-    int dayOfWeek = localTime->tm_wday;
+        // Get the day of the week as an integer (0 - Sunday, 1 - Monday, ...)
+        int dayOfWeek = localTime->tm_wday;
+        int hourOfDay = localTime->tm_hour;
+        int dayOfMonth = localTime->tm_mday;
 
-    // Array of day names
-    const char* dayNames[] = {
-            "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
-    };
+        ////////////////////////////////////////////////////////////////////////////////
 
-    // Get the day name based on the day of the week
-    string currentDayName = dayNames[dayOfWeek];
+        // Array of day names
+        const string dayNames[] = {
+                "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+        };
 
-    if (currentDayName == "Saturday") {
-        for (int i = 0; i < currentAccountIndex; i++) {
-            balances[i] += (balances[i] * (interestRate / 100));
+        // Get the day name based on the day of the week
+        string currentDayName = dayNames[dayOfWeek];
+
+        if (currentDayName == "Saturday") {
+            for (int i = 0; i < currentAccountIndex; i++) {
+                balances[i] += (balances[i] * (interestRate / 100));
+            }
         }
-    }
+
+        ////////////////////////////////////////////////////////////////////////////////////
+
+        for (int i = 0; i < currentRecurringIndex; i++) {
+            if (recurringPaymentFrequency[i] == 1) {
+                if (recurringPaymentTime[i] == hourOfDay) {
+                    balances[recurringPaymentFrom[i]] -= recurringMoneyAmount[i];
+                    balances[recurringPaymentTo[i]] += recurringMoneyAmount[i];
+
+                    ostringstream ossDate;
+                    ostringstream ossTime;
+
+                    string dateTimeNow;
+                    currentTime = time(0);
+                    localTime = localtime(&currentTime);
+                    ossDate << put_time(localTime, "%d-%m-%Y ");
+                    ossTime << put_time(localTime, "%I:%M %p");
+                    dateTimeNow = ossDate.str() + ossTime.str();
+
+                    transactionMoneyAmount[currentTransactionIndex] = -recurringMoneyAmount[i];
+                    transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentFrom[i]];
+                    transactionType[currentTransactionIndex] = "Recurring Transfer";
+                    transactionDates[currentTransactionIndex] = dateTimeNow;
+
+                    currentTransactionIndex++;
+
+                    transactionMoneyAmount[currentTransactionIndex] = recurringMoneyAmount[i];
+                    transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentTo[i]];
+                    transactionType[currentTransactionIndex] = "Recurring Transfer";
+                    transactionDates[currentTransactionIndex] = dateTimeNow;
+
+                    currentTransactionIndex++;
+                }
+            } else if (recurringPaymentFrequency[i] == 2) {
+                if (recurringPaymentTime[i] == dayOfWeek) {
+                    balances[recurringPaymentFrom[i]] -= recurringMoneyAmount[i];
+                    balances[recurringPaymentTo[i]] += recurringMoneyAmount[i];
+
+                    ostringstream ossDate;
+                    ostringstream ossTime;
+
+                    string dateTimeNow;
+                    currentTime = time(0);
+                    localTime = localtime(&currentTime);
+                    ossDate << put_time(localTime, "%d-%m-%Y ");
+                    ossTime << put_time(localTime, "%I:%M %p");
+                    dateTimeNow = ossDate.str() + ossTime.str();
+
+                    transactionMoneyAmount[currentTransactionIndex] = -recurringMoneyAmount[i];
+                    transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentFrom[i]];
+                    transactionType[currentTransactionIndex] = "Recurring Transfer";
+                    transactionDates[currentTransactionIndex] = dateTimeNow;
+
+                    currentTransactionIndex++;
+
+                    transactionMoneyAmount[currentTransactionIndex] = recurringMoneyAmount[i];
+                    transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentTo[i]];
+                    transactionType[currentTransactionIndex] = "Recurring Transfer";
+                    transactionDates[currentTransactionIndex] = dateTimeNow;
+
+                    currentTransactionIndex++;
+                } else if (recurringPaymentFrequency[i] == 3) {
+                    if (recurringPaymentTime[i] == dayOfMonth) {
+                        balances[recurringPaymentFrom[i]] -= recurringMoneyAmount[i];
+                        balances[recurringPaymentTo[i]] += recurringMoneyAmount[i];
+
+                        ostringstream ossDate;
+                        ostringstream ossTime;
+
+                        string dateTimeNow;
+                        currentTime = time(0);
+                        localTime = localtime(&currentTime);
+                        ossDate << put_time(localTime, "%d-%m-%Y ");
+                        ossTime << put_time(localTime, "%I:%M %p");
+                        dateTimeNow = ossDate.str() + ossTime.str();
+
+                        transactionMoneyAmount[currentTransactionIndex] = -recurringMoneyAmount[i];
+                        transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentFrom[i]];
+                        transactionType[currentTransactionIndex] = "Recurring Transfer";
+                        transactionDates[currentTransactionIndex] = dateTimeNow;
+
+                        currentTransactionIndex++;
+
+                        transactionMoneyAmount[currentTransactionIndex] = recurringMoneyAmount[i];
+                        transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentTo[i]];
+                        transactionType[currentTransactionIndex] = "Recurring Transfer";
+                        transactionDates[currentTransactionIndex] = dateTimeNow;
+
+                        currentTransactionIndex++;
+                    }
+                }
+            }
+        }
 
 
         system("cls");
@@ -628,9 +737,6 @@ int main() {
                         break;
                     }
                 }
-
-
-
             }
             break;
 
@@ -887,13 +993,195 @@ int main() {
 
             break;
 
+            case 9: {
+                system("cls");
+
+                cout << "Setup recurring transactions\n";
+
+                bool accountFound = false;
+                int accountIndex;
+                char choice;
+
+
+                while (accountFound == 0) {
+                    cout << "Enter the account number you want to transfer from: ";
+                    int accountNumber;
+                    cin >> accountNumber;
+
+                    for (int i = 0; i < currentAccountIndex; i++) {
+                        if (accountNumbers[i] == accountNumber) {
+                            accountFound = true;
+                            accountIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (accountFound == 0) {
+                        cout << "The account number you entered is not found.\n";
+                        cout << "If you want to re-enter your account number press [Y] else if you want to go to main menu click any key:";
+                        cin >> choice;
+
+                        if (!(choice == 'Y' || choice == 'y')) {
+                            goto menuIterator;
+                        }
+                    }
+                }
+
+                string accountPassword; bool passwordValidated = false; int passwordTries = 4;
+
+                while (!passwordValidated && passwordTries > 0) {
+                    accountPassword = "";
+                    cout << "Please enter the password of your account: ";
+
+                    passwordTries == 4 ? getline(cin.ignore(), accountPassword) : getline(cin, accountPassword);
+
+                    if (accountPassword == passwords[accountIndex]) {
+                        passwordValidated = true;
+                    } else {
+                        cout << "The password you entered is incorrect!\n";
+                        --passwordTries;
+                        if (passwordTries >= 1)
+                            cout << "You have " << passwordTries << " trials left, try again.\n";
+                        else
+                            break;
+                    }
+                }
+
+                if (passwordValidated) {
+                    system("cls");
+                    cout << "Welcome back, " << names[accountIndex] << "!\n";
+                    double moneyAmount;
+
+                    bool receiverAccountFound = false;
+                    int receiverAccountIndex, transactionFrequency, transactionTime;
+
+                    while (receiverAccountFound == 0) {
+                        cout << "Enter the receiver's account number: ";
+                        int receiverAccountNumber;
+                        cin >> receiverAccountNumber;
+
+                        for (int i = 0; i < currentAccountIndex; i++) {
+                            if (accountNumbers[i] == receiverAccountNumber) {
+                                receiverAccountFound = true;
+                                receiverAccountIndex = i;
+                                break;
+                            }
+                        }
+
+                        if (receiverAccountFound == 0) {
+                            cout << "The account number you entered is not found, try again.\n";
+                        }
+                    }
+
+                    cout << "Enter the amount of money you want to transfer every time: ";
+                    cin >> moneyAmount;
+
+
+                    recurIterator: cout << "[1] Every day\n[2] Every week\n[3] Every month\n";
+                    cout << "Enter the frequency between each payment:\n";
+
+                    cin >> transactionFrequency;
+
+                    switch (transactionFrequency) {
+                        case 1: {
+                            cout << "Enter the hour for the payment (use 24-hr format like '21' etc): ";
+                            cin >> transactionTime;
+
+                            recurringPaymentFrom[currentRecurringIndex] = accountIndex;
+                            recurringPaymentTo[currentRecurringIndex] = receiverAccountIndex;
+                            recurringPaymentFrequency[currentRecurringIndex] = transactionFrequency;
+                            recurringMoneyAmount[currentRecurringIndex] = moneyAmount;
+                            recurringPaymentTime[currentRecurringIndex] = transactionTime;
+
+                            currentRecurringIndex++;
+
+                            cout << "A payment of" << moneyAmount << "birr " << "has been successfully to recur every day at " << transactionTime << " from the account number " << accountNumbers[accountIndex] << " to " << names[receiverAccountIndex] << "\nChoose [Y] if you want to go to main menu or any other key if you want to quit: ";
+                            cin >> choice;
+
+                            if (choice == 'Y' || choice == 'y') {
+                                goto menuIterator;
+                            }
+                        }
+                        break;
+
+                        case 2: {
+                            cout << "[1] Sunday\n[2] Monday\n[3] Tuesday\n[4] Wednesday\n[5] Thursday\n[6] Friday\n[7] Saturday\n";
+                            cout << "Enter the week day for the payment to recur (from 1-7 as above stated): ";
+                            cin >> transactionTime;
+
+                            recurringPaymentFrom[currentRecurringIndex] = accountIndex;
+                            recurringPaymentTo[currentRecurringIndex] = receiverAccountIndex;
+                            recurringPaymentFrequency[currentRecurringIndex] = transactionFrequency;
+                            recurringMoneyAmount[currentRecurringIndex] = moneyAmount;
+                            recurringPaymentTime[currentRecurringIndex] = transactionTime - 1;
+
+                            currentRecurringIndex++;
+
+                            cout << "A payment of" << moneyAmount << "birr " << "has been successfully to recur every week-day at day" << transactionTime << " from the account number " << accountNumbers[accountIndex] << " to " << names[receiverAccountIndex] << "\nChoose [Y] if you want to go to main menu or any other key if you want to quit: ";
+                            cin >> choice;
+
+                            if (choice == 'Y' || choice == 'y') {
+                                goto menuIterator;
+                            }
+                        }
+                        break;
+
+                        case 3: {
+                            cout << "[1] January\n[2] February\n[3] March\n[4] April\n[5] May\n[6] June\n[7] July\n[8] August\n[9] September\n[10] October\n[11] November\n[12] December";
+                            cout << "Enter the month for the payment to recur (from 1-12 as above stated): ";
+                            cin >> transactionTime;
+
+                            recurringPaymentFrom[currentRecurringIndex] = accountIndex;
+                            recurringPaymentTo[currentRecurringIndex] = receiverAccountIndex;
+                            recurringPaymentFrequency[currentRecurringIndex] = transactionFrequency;
+                            recurringMoneyAmount[currentRecurringIndex] = moneyAmount;
+                            recurringPaymentTime[currentRecurringIndex] = transactionTime - 1;
+
+                            currentRecurringIndex++;
+
+                            cout << "A payment of" << moneyAmount << "birr " << "has been successfully to recur every month at month" << transactionTime << " from the account number " << accountNumbers[accountIndex] << " to " << names[receiverAccountIndex] << "\nChoose [Y] if you want to go to main menu or any other key if you want to quit: ";
+                            cin >> choice;
+
+                            if (choice == 'Y' || choice == 'y') {
+                                goto menuIterator;
+                            }
+                        }
+                            break;
+
+                        default: {
+                            cout << "Wrong option entered. Click [Y] to retry or any other key to go to main menu: ";
+                            cin >> choice;
+
+                            if (choice == 'Y' || choice == 'y') {
+                                goto menuIterator;
+                            } else {
+                                goto recurIterator;
+                            }
+                        }
+                    }
+
+                } else {
+                    cout << "\nYou have entered incorrect password too many times so we can't grant deposition action now. Click 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
+                    cin >> choice;
+
+                    if (choice == 'Y' || choice == 'y') {
+                        goto menuIterator;
+                    } else {
+                        break;
+                    }
+                }
+
+
+            }
+
+            break;
+
                 
 
             default:
                 break;
         }
 
-        cout << names[0];
         break;
     }
 
