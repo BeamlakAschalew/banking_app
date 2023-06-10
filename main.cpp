@@ -28,8 +28,8 @@ int main() {
     int transactionAccountNumbers[maxTransactions] = {0}; double transactionMoneyAmount[maxTransactions]; string transactionType[maxTransactions];
     string transactionDates[maxTransactions];
 
-    const int numberOfCurrencies = 3;
-    double rates[numberOfCurrencies] = {54.4, 64.7, 58.3,};
+    const int numberOfCurrencies = 4;
+    double rates[numberOfCurrencies] = {54.4, 64.7, 58.3, 1.0};
     string currencyNames[numberOfCurrencies] = {"USD to Birr", "Pound to Birr", "Euro to Birr",};
 
 
@@ -73,7 +73,7 @@ int main() {
                     goto passRetry;
                 } else {
                     passwords[currentAccountIndex] = tempPass;
-                    cout << "pass: "<< passwords[currentAccountIndex] << endl;
+
                 }
 
                 balances[currentAccountIndex] = 0;
@@ -135,13 +135,12 @@ int main() {
 
                 bool accountFound = false;
                 int accountIndex;
+                char choice;
 
 
                 while (accountFound == 0) {
                     cout << "Enter your account number: ";
-
                     int accountNumber;
-
                     cin >> accountNumber;
 
                     for (int i = 0; i < currentAccountIndex; i++) {
@@ -153,7 +152,13 @@ int main() {
                     }
 
                     if (accountFound == 0) {
-                        cout << "The account number you entered is not found, try again.\n";
+                        cout << "The account number you entered is not found.\n";
+                        cout << "If you want to re-enter your account number press [Y] else if you want to go to main menu click any key:";
+                        cin >> choice;
+
+                        if (!(choice == 'Y' || choice == 'y')) {
+                            goto menuIterator;
+                        }
                     }
                 }
 
@@ -162,8 +167,8 @@ int main() {
                 while (!passwordValidated && passwordTries > 0) {
                     accountPassword = "";
                     cout << "Please enter the password of your account: ";
-                    getline(cin, accountPassword);
-                    cout << "pass " << accountPassword << endl;
+
+                    passwordTries == 4 ? getline(cin.ignore(), accountPassword) : getline(cin, accountPassword);
 
                     if (accountPassword == passwords[accountIndex]) {
                         passwordValidated = true;
@@ -177,18 +182,26 @@ int main() {
                     }
                 }
 
-                char choice;
-
                 if (passwordValidated) {
+                    system("cls");
                     cout << "Welcome back, " << names[accountIndex] << "!\n";
-                    amountIterator: double moneyAmount;
+                    amountIterator: double moneyAmount, convertedAmount; int currency;
+
+                    cout << "Enter the currency you have:\n";
+
+                    cout << "[1] US Dollar\n";
+                    cout << "[2] Pound\n";
+                    cout << "[3] Euro\n";
+                    cout << "[4] Birr\n\n";
+                    cin >> currency;
+
+
                     cout << "Enter the amount of money you want to deposit: ";
                     cin >> moneyAmount;
 
-
-
                     if (moneyAmount >= 0.1) {
-                        balances[accountIndex] += moneyAmount;
+                        convertedAmount = moneyAmount * rates[currency - 1];
+                        balances[accountIndex] += convertedAmount;
 
                         ostringstream ossDate;
                         ostringstream ossTime;
@@ -205,9 +218,10 @@ int main() {
                         transactionType[currentTransactionIndex] = "Deposit";
                         transactionDates[currentTransactionIndex] = dateTimeNow;
 
-
                         currentTransactionIndex++;
-                        cout << "You have successfully deposited " << moneyAmount << "birr into your account.\nYour current balance: " << balances[accountIndex] << "birr\nClick 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
+
+                        system("cls");
+                        cout << "You have successfully deposited " << convertedAmount << "birr into your account.\nYour current balance: " << balances[accountIndex] << "birr\nClick 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
                         cin >> choice;
 
                         if (choice == 'Y' || choice == 'y') {
@@ -312,6 +326,7 @@ int main() {
 
                         currentTransactionIndex++;
 
+                        system("cls");
                         cout << "You have successfully withdrawn " << moneyAmount << "birr from your account.\nYour current balance: " << balances[accountIndex] << "birr\nClick 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
                         cin >> choice;
 
@@ -443,6 +458,7 @@ int main() {
 
                         currentTransactionIndex++;
 
+                        system("cls");
                         cout << "You have successfully transferred " << moneyAmount << "birr from your account. To " << names[receiverAccountIndex] << "\nYour current balance: " << balances[accountIndex] << "birr\nClick 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
                         cin >> choice;
 
@@ -704,7 +720,7 @@ int main() {
                 cout << "|   " << setw(17) << left << "Currency" << "|   " << setw(17) << left << "Birr" << "|\n";
                 cout << "+" << string(20, '-') << "+" << string(20, '-') << "+\n";
 
-                for (int i = 0; i < numberOfCurrencies; i++) {
+                for (int i = 0; i < numberOfCurrencies - 1; i++) {
                         cout << "|   " << setw(17) << left << currencyNames[i] << "|   " << setw(17) << left << rates[i] << "|\n";
                 }
 
@@ -741,6 +757,9 @@ int main() {
 
 
                     toBirr = amount * rates[currencyFrom - 1];
+                    finalResult = toBirr / rates[currencyTo - 1];
+
+                    cout << "fr " << finalResult;
 
                 }
 
