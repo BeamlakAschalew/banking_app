@@ -71,6 +71,8 @@ int main() {
         // Get the day name based on the day of the week
         string currentDayName = dayNames[dayOfWeek];
 
+
+        // Loop through all the accounts and add an interest based on the balance
         if (currentDayName == "Saturday") {
             for (int i = 0; i < currentAccountIndex; i++) {
                 balances[i] += (balances[i] * (interestRate / 100));
@@ -79,6 +81,8 @@ int main() {
 
         ////////////////////////////////////////////////////////////////////////////////////
 
+
+        // Iterate through all registered recurring payments and transfer money based on the time specified
         for (int i = 0; i < currentRecurringIndex; i++) {
             if (recurringPaymentFrequency[i] == 1) {
                 if (recurringPaymentTime[i] == hourOfDay) {
@@ -182,6 +186,7 @@ int main() {
 
         cout << endl << endl;
 
+        // Menu table layout
         cout << string(5, ' ') + "+" << string(48, '-') << "+\n";
         for (int i = 0; i < 9; i++) {
             cout << string(5, ' ') + "|   " << setw(45) << left << menuOptions[i] << "|\n";
@@ -214,11 +219,17 @@ int main() {
 
                 balances[currentAccountIndex] = 0;
 
+                // Initialize randomizer engine
                 random_device rd;
                 mt19937 engine(rd());
-                uniform_int_distribution<int> distribution(1, 99999);
+
+                // Specify the randomizer to return values between 10000 and 99999
+                uniform_int_distribution<int> distribution(10000, 99999);
+
+                // Pass the engine variable into the distribution to generate a random number and assign it to the randomGenerated integer variable
                 int randomGenerated = distribution(engine), currentRand;
                 stringstream  ss;
+
 
                 int leadingZeros = 5 - to_string(randomGenerated).length();
                     ss << string(leadingZeros, '0') << randomGenerated;
@@ -226,6 +237,7 @@ int main() {
 
                 bool uniqueFound = false;
 
+                // Iterate through all currently registered accounts and check if the newly generated account number doesn't exist, if so add it for the new user
                 for (int i = 0; i < currentAccountIndex + 1; i++) {
                     if (accountNumbers[i] != currentRand) {
                         accountNumbers[currentAccountIndex] = currentRand;
@@ -279,6 +291,7 @@ int main() {
                     int accountNumber;
                     cin >> accountNumber;
 
+                    // Iterate through all accounts and assign the 'i' where the account number is found to accountIndex
                     for (int i = 0; i < currentAccountIndex; i++) {
                         if (accountNumbers[i] == accountNumber) {
                             accountFound = true;
@@ -300,6 +313,7 @@ int main() {
 
                 string accountPassword; bool passwordValidated = false; int passwordTries = 4;
 
+                // Verify password
                 while (!passwordValidated && passwordTries > 0) {
                     accountPassword = "";
                     cout << "Please enter the password of your account: ";
@@ -323,6 +337,7 @@ int main() {
                     cout << "Welcome back, " << names[accountIndex] << "!\n";
                     amountIterator: double moneyAmount, convertedAmount; int currency;
 
+                    // Get the currency the user has and convert it to a birr
                     cout << "Enter the currency you have:\n";
 
                     cout << "[1] US Dollar\n";
@@ -331,7 +346,6 @@ int main() {
                     cout << "[4] Birr\n\n";
                     cin >> currency;
 
-
                     cout << "Enter the amount of money you want to deposit: ";
                     cin >> moneyAmount;
 
@@ -339,16 +353,23 @@ int main() {
                         convertedAmount = moneyAmount * rates[currency - 1];
                         balances[accountIndex] += convertedAmount;
 
+                        // String manipulating data types
                         ostringstream ossDate;
                         ostringstream ossTime;
 
                         string dateTimeNow;
+
+                        // Get the system's current date/time
                         currentTime = time(0);
-                        tm* localTime = localtime(&currentTime);
-                        ossDate << put_time(localTime, "%d-%m-%Y ");
+
+                        localTime = /* Convert the system time into a tm structure */ localtime(&currentTime);
+
+
+                        ossDate << /* Format local time into a string */ put_time(localTime, "%d-%m-%Y ");
                         ossTime << put_time(localTime, "%I:%M %p");
                         dateTimeNow = ossDate.str() + ossTime.str();
 
+                        // Assign values to arrays respectively
                         transactionMoneyAmount[currentTransactionIndex] = convertedAmount;
                         transactionAccountNumbers[currentTransactionIndex] = accountNumbers[accountIndex];
                         transactionType[currentTransactionIndex] = "Deposit";
@@ -449,7 +470,7 @@ int main() {
 
                         string dateTimeNow;
                         currentTime = time(0);
-                        tm* localTime = localtime(&currentTime);
+                        localTime = localtime(&currentTime);
                         ossDate << put_time(localTime, "%d-%m-%Y ");
                         ossTime << put_time(localTime, "%I:%M %p");
                         dateTimeNow = ossDate.str() + ossTime.str();
@@ -575,7 +596,7 @@ int main() {
 
                         string dateTimeNow;
                         currentTime = time(0);
-                        tm* localTime = localtime(&currentTime);
+                        localTime = localtime(&currentTime);
                         ossDate << put_time(localTime, "%d-%m-%Y ");
                         ossTime << put_time(localTime, "%I:%M %p");
                         dateTimeNow = ossDate.str() + ossTime.str();
@@ -699,8 +720,10 @@ int main() {
                     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
                     for (int i = 0; i < currentTransactionIndex; i++) {
+                        // Display transaction records where account number equals the signed-in user account number
                         if (transactionAccountNumbers[i] == accountNumbers[accountIndex]) {
                             cout << "|" << setw(typeWidth + 7) << left << transactionType[i] << "|";
+                                    // Change the console text to red if money is lost from the account or green if a money is desposited or trasferred in to the account
                                     if (transactionMoneyAmount[i] < 0) {
                                         SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
                                     } else {
@@ -717,6 +740,7 @@ int main() {
                     // Print table footer
                     cout << "+" << string(typeWidth + 7, '-') << "+" << string(amountWidth, '-') << "+" << string(dateWidth, '-') << "+\n";
 
+                    cout << "Account balance: " << balances[accountIndex] << endl;
                    cout << "Click 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
                    cin >> choice;
 
@@ -895,12 +919,6 @@ int main() {
                     cout << "fr " << finalResult;
 
                 }
-
-
-
-
-
-
             }
             break;
 
@@ -986,9 +1004,6 @@ int main() {
                         break;
                     }
                 }
-
-
-
             }
 
             break;
@@ -1170,13 +1185,10 @@ int main() {
                         break;
                     }
                 }
-
-
             }
 
             break;
 
-                
 
             default:
                 break;
