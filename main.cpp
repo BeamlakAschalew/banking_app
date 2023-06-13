@@ -71,7 +71,6 @@ int main() {
         // Get the day name based on the day of the week
         string currentDayName = dayNames[dayOfWeek];
 
-
         // Loop through all the accounts and add an interest based on the balance
         if (currentDayName == "Saturday") {
             for (int i = 0; i < currentAccountIndex; i++) {
@@ -86,63 +85,7 @@ int main() {
         for (int i = 0; i < currentRecurringIndex; i++) {
             if (recurringPaymentFrequency[i] == 1) {
                 if (recurringPaymentTime[i] == hourOfDay) {
-                    balances[recurringPaymentFrom[i]] -= recurringMoneyAmount[i];
-                    balances[recurringPaymentTo[i]] += recurringMoneyAmount[i];
-
-                    ostringstream ossDate;
-                    ostringstream ossTime;
-
-                    string dateTimeNow;
-                    currentTime = time(0);
-                    localTime = localtime(&currentTime);
-                    ossDate << put_time(localTime, "%d-%m-%Y ");
-                    ossTime << put_time(localTime, "%I:%M %p");
-                    dateTimeNow = ossDate.str() + ossTime.str();
-
-                    transactionMoneyAmount[currentTransactionIndex] = -recurringMoneyAmount[i];
-                    transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentFrom[i]];
-                    transactionType[currentTransactionIndex] = "Recurring Transfer";
-                    transactionDates[currentTransactionIndex] = dateTimeNow;
-
-                    currentTransactionIndex++;
-
-                    transactionMoneyAmount[currentTransactionIndex] = recurringMoneyAmount[i];
-                    transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentTo[i]];
-                    transactionType[currentTransactionIndex] = "Recurring Transfer";
-                    transactionDates[currentTransactionIndex] = dateTimeNow;
-
-                    currentTransactionIndex++;
-                }
-            } else if (recurringPaymentFrequency[i] == 2) {
-                if (recurringPaymentTime[i] == dayOfWeek) {
-                    balances[recurringPaymentFrom[i]] -= recurringMoneyAmount[i];
-                    balances[recurringPaymentTo[i]] += recurringMoneyAmount[i];
-
-                    ostringstream ossDate;
-                    ostringstream ossTime;
-
-                    string dateTimeNow;
-                    currentTime = time(0);
-                    localTime = localtime(&currentTime);
-                    ossDate << put_time(localTime, "%d-%m-%Y ");
-                    ossTime << put_time(localTime, "%I:%M %p");
-                    dateTimeNow = ossDate.str() + ossTime.str();
-
-                    transactionMoneyAmount[currentTransactionIndex] = -recurringMoneyAmount[i];
-                    transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentFrom[i]];
-                    transactionType[currentTransactionIndex] = "Recurring Transfer";
-                    transactionDates[currentTransactionIndex] = dateTimeNow;
-
-                    currentTransactionIndex++;
-
-                    transactionMoneyAmount[currentTransactionIndex] = recurringMoneyAmount[i];
-                    transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentTo[i]];
-                    transactionType[currentTransactionIndex] = "Recurring Transfer";
-                    transactionDates[currentTransactionIndex] = dateTimeNow;
-
-                    currentTransactionIndex++;
-                } else if (recurringPaymentFrequency[i] == 3) {
-                    if (recurringPaymentTime[i] == dayOfMonth) {
+                    if (balances[recurringPaymentFrom[i]] >= 0.1) {
                         balances[recurringPaymentFrom[i]] -= recurringMoneyAmount[i];
                         balances[recurringPaymentTo[i]] += recurringMoneyAmount[i];
 
@@ -169,6 +112,68 @@ int main() {
                         transactionDates[currentTransactionIndex] = dateTimeNow;
 
                         currentTransactionIndex++;
+                    }
+                }
+            } else if (recurringPaymentFrequency[i] == 2) {
+                if (recurringPaymentTime[i] == dayOfWeek) {
+                    if (balances[recurringPaymentFrom[i]] >= 0.1) {
+                        balances[recurringPaymentFrom[i]] -= recurringMoneyAmount[i];
+                        balances[recurringPaymentTo[i]] += recurringMoneyAmount[i];
+
+                        ostringstream ossDate;
+                        ostringstream ossTime;
+
+                        string dateTimeNow;
+                        currentTime = time(0);
+                        localTime = localtime(&currentTime);
+                        ossDate << put_time(localTime, "%d-%m-%Y ");
+                        ossTime << put_time(localTime, "%I:%M %p");
+                        dateTimeNow = ossDate.str() + ossTime.str();
+
+                        transactionMoneyAmount[currentTransactionIndex] = -recurringMoneyAmount[i];
+                        transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentFrom[i]];
+                        transactionType[currentTransactionIndex] = "Recurring Transfer";
+                        transactionDates[currentTransactionIndex] = dateTimeNow;
+
+                        currentTransactionIndex++;
+
+                        transactionMoneyAmount[currentTransactionIndex] = recurringMoneyAmount[i];
+                        transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentTo[i]];
+                        transactionType[currentTransactionIndex] = "Recurring Transfer";
+                        transactionDates[currentTransactionIndex] = dateTimeNow;
+
+                        currentTransactionIndex++;
+                    }
+                } else if (recurringPaymentFrequency[i] == 3) {
+                    if (recurringPaymentTime[i] == dayOfMonth) {
+                        if (balances[recurringPaymentFrom[i]] >= 0.1) {
+                            balances[recurringPaymentFrom[i]] -= recurringMoneyAmount[i];
+                            balances[recurringPaymentTo[i]] += recurringMoneyAmount[i];
+
+                            ostringstream ossDate;
+                            ostringstream ossTime;
+
+                            string dateTimeNow;
+                            currentTime = time(0);
+                            localTime = localtime(&currentTime);
+                            ossDate << put_time(localTime, "%d-%m-%Y ");
+                            ossTime << put_time(localTime, "%I:%M %p");
+                            dateTimeNow = ossDate.str() + ossTime.str();
+
+                            transactionMoneyAmount[currentTransactionIndex] = -recurringMoneyAmount[i];
+                            transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentFrom[i]];
+                            transactionType[currentTransactionIndex] = "Recurring Transfer";
+                            transactionDates[currentTransactionIndex] = dateTimeNow;
+
+                            currentTransactionIndex++;
+
+                            transactionMoneyAmount[currentTransactionIndex] = recurringMoneyAmount[i];
+                            transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentTo[i]];
+                            transactionType[currentTransactionIndex] = "Recurring Transfer";
+                            transactionDates[currentTransactionIndex] = dateTimeNow;
+
+                            currentTransactionIndex++;
+                        }
                     }
                 }
             }
@@ -214,7 +219,6 @@ int main() {
                     goto passRetry;
                 } else {
                     passwords[currentAccountIndex] = tempPass;
-
                 }
 
                 balances[currentAccountIndex] = 0;
@@ -229,7 +233,6 @@ int main() {
                 // Pass the engine variable into the distribution to generate a random number and assign it to the randomGenerated integer variable
                 int randomGenerated = distribution(engine), currentRand;
                 stringstream  ss;
-
 
                 int leadingZeros = 5 - to_string(randomGenerated).length();
                     ss << string(leadingZeros, '0') << randomGenerated;
@@ -257,12 +260,14 @@ int main() {
                     }
                 }
 
+                system("cls");
+                cout << "You have successfully created an account!\n";
                 cout << "Your account number is: " << accountNumbers[currentAccountIndex] << endl;
                 cout << "Your account balance is: " << balances[currentAccountIndex] << endl;
 
                 currentAccountIndex++;
 
-                cout << "If you would like to go to main menu click [Y] else if you want to quit click any key except" << endl;
+                cout << "If you would like to go to main menu click [Y] else if you want to quit click any key: ";
 
                 char menuChoice;
                 cin >> menuChoice;
@@ -271,7 +276,6 @@ int main() {
                     continue;
                 }  else {
                     navigateMenu = false;
-
                 }
             }
 
@@ -279,17 +283,25 @@ int main() {
 
             case 2: {
                 system("cls");
-                cout << "Deposit into your account: \n";
+                cout << "Deposit into your account\n";
 
                 bool accountFound = false;
                 int accountIndex;
                 char choice;
 
-
                 while (accountFound == 0) {
-                    cout << "Enter your account number: ";
+                    accountIterator: cout << "Enter your account number: ";
                     int accountNumber;
                     cin >> accountNumber;
+
+                    if (cin.fail()) {
+                        cout << "Invalid input. Please enter a number." << endl;
+                        // Clear the error state of cin
+                        cin.clear();
+                        // Discard any remaining input in the buffer
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        goto accountIterator;
+                    }
 
                     // Iterate through all accounts and assign the 'i' where the account number is found to accountIndex
                     for (int i = 0; i < currentAccountIndex; i++) {
@@ -311,43 +323,39 @@ int main() {
                     }
                 }
 
-                string accountPassword; bool passwordValidated = false; int passwordTries = 4;
-
-                // Verify password
-                while (!passwordValidated && passwordTries > 0) {
-                    accountPassword = "";
-                    cout << "Please enter the password of your account: ";
-
-                    passwordTries == 4 ? getline(cin.ignore(), accountPassword) : getline(cin, accountPassword);
-
-                    if (accountPassword == passwords[accountIndex]) {
-                        passwordValidated = true;
-                    } else {
-                        cout << "The password you entered is incorrect!\n";
-                        --passwordTries;
-                        if (passwordTries >= 1)
-                            cout << "You have " << passwordTries << " trials left, try again.\n";
-                        else
-                            break;
-                    }
-                }
-
-                if (passwordValidated) {
                     system("cls");
                     cout << "Welcome back, " << names[accountIndex] << "!\n";
                     amountIterator: double moneyAmount, convertedAmount; int currency;
-
-                    // Get the currency the user has and convert it to a birr
-                    cout << "Enter the currency you have:\n";
 
                     cout << "[1] US Dollar\n";
                     cout << "[2] Pound\n";
                     cout << "[3] Euro\n";
                     cout << "[4] Birr\n\n";
+
+                    // Get the currency the user has and convert it to a birr
+                    cout << "Enter the currency you have: ";
                     cin >> currency;
+
+                    if (cin.fail()) {
+                        cout << "Invalid input. Please enter a number." << endl;
+                        // Clear the error state of cin
+                        cin.clear();
+                        // Discard any remaining input in the buffer
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        goto accountIterator;
+                    }
 
                     cout << "Enter the amount of money you want to deposit: ";
                     cin >> moneyAmount;
+
+                    if (cin.fail()) {
+                        cout << "Invalid input. Please enter a number." << endl;
+                        // Clear the error state of cin
+                        cin.clear();
+                        // Discard any remaining input in the buffer
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        goto accountIterator;
+                    }
 
                     if (moneyAmount >= 0.1) {
                         convertedAmount = moneyAmount * rates[currency - 1];
@@ -361,10 +369,7 @@ int main() {
 
                         // Get the system's current date/time
                         currentTime = time(0);
-
                         localTime = /* Convert the system time into a tm structure */ localtime(&currentTime);
-
-
                         ossDate << /* Format local time into a string */ put_time(localTime, "%d-%m-%Y ");
                         ossTime << put_time(localTime, "%I:%M %p");
                         dateTimeNow = ossDate.str() + ossTime.str();
@@ -378,7 +383,7 @@ int main() {
                         currentTransactionIndex++;
 
                         system("cls");
-                        cout << "You have successfully deposited " << convertedAmount << "birr into your account.\nYour current balance: " << balances[accountIndex] << "birr\nClick 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
+                        cout << "You have successfully deposited " << convertedAmount << "birr into your account.\nYour current balance: " << balances[accountIndex] << "birr\nClick [Y] if you want to go to main menu else any key if you want to quit.\n";
                         cin >> choice;
 
                         if (choice == 'Y' || choice == 'y') {
@@ -390,35 +395,31 @@ int main() {
                         cout << "The amount you entered is too low, try again.\n";
                         goto amountIterator;
                     }
-                } else {
-                    cout << "\nYou have entered incorrect password too many times so we can't grant deposition action now. Click 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
-                    cin >> choice;
-
-                    if (choice == 'Y' || choice == 'y') {
-                        goto menuIterator;
-                    } else {
-                        break;
-                    }
-                }
-
-
             }
 
             break;
 
             case 3: {
                 system("cls");
-                cout << "Withdraw from your account: \n";
+                cout << "Withdraw from your account\n";
 
                 bool accountFound = false;
                 int accountIndex;
+                char choice;
 
                 while (accountFound == 0) {
-                    cout << "Enter your account number: \n";
-
+                    withdrawAccountIterator: cout << "Enter your account number: ";
                     int accountNumber;
-
                     cin >> accountNumber;
+
+                    if (cin.fail()) {
+                        cout << "Invalid input. Please enter a number." << endl;
+                        // Clear the error state of cin
+                        cin.clear();
+                        // Discard any remaining input in the buffer
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        goto withdrawAccountIterator;
+                    }
 
                     for (int i = 0; i < maxAccounts; i++) {
                         if (accountNumbers[i] == accountNumber) {
@@ -429,15 +430,21 @@ int main() {
                     }
 
                     if (accountFound == 0) {
-                        cout << "The account number you entered is not found, try again.\n";
+                        cout << "The account number you entered is not found.\n";
+                        cout << "If you want to re-enter your account number press [Y] else if you want to go to main menu click any key:";
+                        cin >> choice;
+
+                        if (!(choice == 'Y' || choice == 'y')) {
+                            goto menuIterator;
+                        }
                     }
                 }
 
                 string accountPassword; bool passwordValidated = false; int passwordTries = 4;
 
                 while (!passwordValidated && passwordTries > 0) {
-                    cout << "Please enter the password of your account: \n";
-                    getline(cin.ignore(), accountPassword);
+                    cout << "Please enter the password of your account: ";
+                    (passwordTries == 4) ? getline(cin.ignore(), accountPassword) : getline(cin, accountPassword);
 
                     if (accountPassword == passwords[accountIndex]) {
                         passwordValidated = true;
@@ -452,16 +459,31 @@ int main() {
                     }
                 }
 
-                char choice;
-
                 if (passwordValidated) {
                     withdrawAmountIterator: double moneyAmount;
                     cout << "Enter the amount of money you want to withdraw: ";
                     cin >> moneyAmount;
 
-                    if ((balances[accountIndex] - moneyAmount) <= 25) {
-                        cout << "Your balance is insufficient!" << "Your balance is " << balances[accountIndex] << "birr\n";
+                    if (cin.fail()) {
+                        cout << "Invalid input. Please enter a number." << endl;
+                        // Clear the error state of cin
+                        cin.clear();
+                        // Discard any remaining input in the buffer
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
                         goto withdrawAmountIterator;
+                    }
+
+                    if ((balances[accountIndex] - moneyAmount) <= 25) {
+                        cout << "Your balance is insufficient!" << " Your balance is " << balances[accountIndex] << "birr\n";
+                        cout << "If you want to enter amount again click [Y], if you want to go to main menu press any key: ";
+                        cin >> choice;
+
+                        if (choice == 'Y' || choice == 'y') {
+                            goto withdrawAmountIterator;
+                        } else {
+                            goto menuIterator;
+                        }
+
                     } else {
                         balances[accountIndex] -= moneyAmount;
 
@@ -480,11 +502,10 @@ int main() {
                         transactionType[currentTransactionIndex] = "Withdrawal";
                         transactionDates[currentTransactionIndex] = dateTimeNow;
 
-
                         currentTransactionIndex++;
 
                         system("cls");
-                        cout << "You have successfully withdrawn " << moneyAmount << "birr from your account.\nYour current balance: " << balances[accountIndex] << "birr\nClick 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
+                        cout << "You have successfully withdrawn " << moneyAmount << "birr from your account.\nYour current balance: " << balances[accountIndex] << "birr\nClick [Y] if you want to go to main menu else click any if you want to quit.\n";
                         cin >> choice;
 
                         if (choice == 'Y' || choice == 'y') {
@@ -496,7 +517,7 @@ int main() {
 
 
                 } else {
-                    cout << "\nYou have entered incorrect password too many times so we can't grant deposition action now. Click 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
+                    cout << "\nYou have entered incorrect password too many times so we can't grant deposition action now. Click [Y] if you want to go to main menu else click any key if you want to quit.\n";
                     cin >> choice;
 
                     if (choice == 'Y' || choice == 'y') {
@@ -511,17 +532,25 @@ int main() {
 
             case 4: {
                 system("cls");
-                cout << "Transfer: \n";
+                cout << "Transfer\n";
 
                 bool accountFound = false;
                 int accountIndex;
+                char choice;
 
                 while (accountFound == 0) {
-                    cout << "Enter your account number: \n";
-
+                    transferAccountIterator: cout << "Enter your account number: ";
                     int accountNumber;
-
                     cin >> accountNumber;
+
+                    if (cin.fail()) {
+                        cout << "Invalid input. Please enter a number." << endl;
+                        // Clear the error state of cin
+                        cin.clear();
+                        // Discard any remaining input in the buffer
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        goto transferAccountIterator;
+                    }
 
                     for (int i = 0; i < maxAccounts; i++) {
                         if (accountNumbers[i] == accountNumber) {
@@ -532,15 +561,21 @@ int main() {
                     }
 
                     if (accountFound == 0) {
-                        cout << "The account number you entered is not found, try again.\n";
+                        cout << "The account number you entered is not found.\n";
+                        cout << "If you want to re-enter your account number press [Y] else if you want to go to main menu click any key:";
+                        cin >> choice;
+
+                        if (!(choice == 'Y' || choice == 'y')) {
+                            goto menuIterator;
+                        }
                     }
                 }
 
                 string accountPassword; bool passwordValidated = false; int passwordTries = 4;
 
                 while (!passwordValidated && passwordTries > 0) {
-                    cout << "Please enter the password of your account: \n";
-                    getline(cin.ignore(), accountPassword);
+                    cout << "Please enter the password of your account: ";
+                    (passwordTries == 4) ? getline(cin.ignore(), accountPassword) : getline(cin, accountPassword);
 
                     if (accountPassword == passwords[accountIndex]) {
                         passwordValidated = true;
@@ -555,19 +590,27 @@ int main() {
                     }
                 }
 
-                char choice;
-
                 if (passwordValidated) {
                     double moneyAmount;
+                    system("cls");
                     cout << "Welcome back, " << names[accountIndex] << "!\n";
 
                     bool receiverAccountFound = false;
                     int receiverAccountIndex;
 
                     while (receiverAccountFound == 0) {
-                        cout << "Enter the receiver's account number: ";
+                        receiverAccountIterate: cout << "Enter the receiver's account number: ";
                         int receiverAccountNumber;
                         cin >> receiverAccountNumber;
+
+                        if (cin.fail()) {
+                            cout << "Invalid input. Please enter a number." << endl;
+                            // Clear the error state of cin
+                            cin.clear();
+                            // Discard any remaining input in the buffer
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                            goto receiverAccountIterate;
+                        }
 
                         for (int i = 0; i < currentAccountIndex; i++) {
                             if (accountNumbers[i] == receiverAccountNumber) {
@@ -578,15 +621,29 @@ int main() {
                         }
 
                         if (receiverAccountFound == 0) {
-                            cout << "The account number you entered is not found, try again.\n";
+                            cout << "The account number you entered is not found.\n";
+                            cout << "If you want to re-enter your account number press [Y] else if you want to go to main menu click any key:";
+                            cin >> choice;
+
+                            if (!(choice == 'Y' || choice == 'y')) {
+                                goto menuIterator;
+                            }
                         }
                     }
                     transferAmountIterator: cout << "Enter the amount of money you want to transfer: ";
                     cin >> moneyAmount;
 
-                    if ((balances[accountIndex] - moneyAmount) <= 25) {
-                        cout << "Your balance is insufficient!" << "Your balance is " << balances[accountIndex] << "birr\n";
-                        goto transferAmountIterator;
+                    if ((balances[accountIndex] - moneyAmount) <= 0.1) {
+                        cout << "Your balance is insufficient!" << " Your balance is " << balances[accountIndex] << "birr\n";
+                        cout << "If you want to enter amount again click [Y], if you want to go to main menu press any key: ";
+                        cin >> choice;
+
+                        if (choice == 'Y' || choice == 'y') {
+                            goto transferAmountIterator;
+                        } else {
+                            goto menuIterator;
+                        }
+
                     } else {
                         balances[accountIndex] -= moneyAmount;
                         balances[receiverAccountIndex] += moneyAmount;
@@ -616,7 +673,7 @@ int main() {
                         currentTransactionIndex++;
 
                         system("cls");
-                        cout << "You have successfully transferred " << moneyAmount << "birr from your account. To " << names[receiverAccountIndex] << "\nYour current balance: " << balances[accountIndex] << "birr\nClick 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
+                        cout << "You have successfully transferred " << moneyAmount << "birr from your account. To " << names[receiverAccountIndex] << "\nYour current balance: " << balances[accountIndex] << "birr\nClick [Y] if you want to go to main menu else click any key if you want to quit.\n";
                         cin >> choice;
 
                         if (choice == 'Y' || choice == 'y') {
@@ -629,7 +686,7 @@ int main() {
 
                 } else {
 
-                    cout << "\nYou have entered incorrect password too many times so we can't grant deposition action now. Click 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
+                    cout << "\nYou have entered incorrect password too many times so we can't grant deposition action now. Click [Y] if you want to go to main menu, click any other key to quit.\n";
                     cin >> choice;
 
                     if (choice == 'Y' || choice == 'y') {
@@ -649,13 +706,21 @@ int main() {
 
                 bool accountFound = false;
                 int accountIndex;
+                char choice;
 
                 while (!accountFound) {
-                    cout << "Enter your account number: \n";
-
+                    transactionAccountIterator: cout << "Enter your account number: ";
                     int accountNumber;
-
                     cin >> accountNumber;
+
+                    if (cin.fail()) {
+                        cout << "Invalid input. Please enter a number." << endl;
+                        // Clear the error state of cin
+                        cin.clear();
+                        // Discard any remaining input in the buffer
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        goto transactionAccountIterator;
+                    }
 
                     for (int i = 0; i < maxAccounts; i++) {
                         if (accountNumbers[i] == accountNumber) {
@@ -666,16 +731,21 @@ int main() {
                     }
 
                     if (accountFound == 0) {
-                        cout << "The account number you entered is not found, try again.\n";
+                        cout << "The account number you entered is not found.\n";
+                        cout << "If you want to re-enter your account number press [Y] else if you want to go to main menu click any key:";
+                        cin >> choice;
+
+                        if (!(choice == 'Y' || choice == 'y')) {
+                            goto menuIterator;
+                        }
                     }
                 }
 
                 string accountPassword; bool passwordValidated = false; int passwordTries = 4;
 
-
                 while (!passwordValidated && passwordTries > 0) {
-                    cout << "Please enter the password of your account: \n";
-                    getline(cin.ignore(), accountPassword);
+                    cout << "Please enter the password of your account: ";
+                    (passwordTries == 4) ? getline(cin.ignore(), accountPassword) : getline(cin, accountPassword);
 
                     if (accountPassword == passwords[accountIndex]) {
                         passwordValidated = true;
@@ -690,14 +760,12 @@ int main() {
                     }
                 }
 
-                char choice;
-
                 if (passwordValidated) {
                     const int columnWidth = 15;
                     int typeWidth = 0;
                     int amountWidth = 0;
                     int dateWidth = 0;
-
+                    system("cls");
                     cout << "Welcome back, " << names[accountIndex] << "!\n";
 
                     // Calculate maximum column widths
@@ -740,19 +808,19 @@ int main() {
                     // Print table footer
                     cout << "+" << string(typeWidth + 7, '-') << "+" << string(amountWidth, '-') << "+" << string(dateWidth, '-') << "+\n";
 
-                    cout << "Account balance: " << balances[accountIndex] << endl;
-                   cout << "Click 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
+                    cout << "Account balance: " << balances[accountIndex] << " birr" << endl;
+                   cout << "Click [Y] if you want to go to main menu, click any other key to quit: ";
                    cin >> choice;
 
                    if (choice == 'Y' || choice == 'y') {
                        goto menuIterator;
                    } else {
-                       exit;
+                       break;
                    }
 
                 } else {
 
-                    cout << "\nYou have entered incorrect password too many times so we can't grant deposition action now. Click 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
+                    cout << "\nYou have entered incorrect password too many times so we can't grant deposition action now. Click [Y] if you want to go to main menu, click any other key to quit: ";
                     cin >> choice;
 
                     if (choice == 'Y' || choice == 'y') {
@@ -765,19 +833,26 @@ int main() {
             break;
 
             case 6: {
-
                 system("cls");
-                cout << "Modify account details:\n";
+                cout << "Modify account details";
 
                 bool accountFound = false;
                 int accountIndex;
+                char choice;
 
                 while (!accountFound) {
-                    cout << "Enter your account number: \n";
-
+                    modifyAccountIterator: cout << "Enter your account number: ";
                     int accountNumber;
-
                     cin >> accountNumber;
+
+                    if (cin.fail()) {
+                        cout << "Invalid input. Please enter a number." << endl;
+                        // Clear the error state of cin
+                        cin.clear();
+                        // Discard any remaining input in the buffer
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        goto modifyAccountIterator;
+                    }
 
                     for (int i = 0; i < maxAccounts; i++) {
                         if (accountNumbers[i] == accountNumber) {
@@ -788,16 +863,21 @@ int main() {
                     }
 
                     if (accountFound == 0) {
-                        cout << "The account number you entered is not found, try again.\n";
+                        cout << "The account number you entered is not found.\n";
+                        cout << "If you want to re-enter your account number press [Y] else if you want to go to main menu click any key: ";
+                        cin >> choice;
+
+                        if (!(choice == 'Y' || choice == 'y')) {
+                            goto menuIterator;
+                        }
                     }
                 }
 
                 string accountPassword; bool passwordValidated = false; int passwordTries = 4;
 
-
                 while (!passwordValidated && passwordTries > 0) {
-                    cout << "Please enter the password of your account: \n";
-                    getline(cin.ignore(), accountPassword);
+                    cout << "Please enter the password of your account: ";
+                    (passwordTries == 4) ? getline(cin.ignore(), accountPassword) : getline(cin, accountPassword);
 
                     if (accountPassword == passwords[accountIndex]) {
                         passwordValidated = true;
@@ -812,8 +892,6 @@ int main() {
                     }
                 }
 
-                char choice;
-
                 if (passwordValidated) {
                     const int columnWidth = 15;
                     int typeWidth = 0;
@@ -821,17 +899,17 @@ int main() {
                     int dateWidth = 0;
 
                    settingsIterator: cout << "Welcome back, " << names[accountIndex] << "!\n";
-                    cout << "Account Number:" << accountNumbers[accountIndex] << endl;
-                    cout << "1. Account Name:" << names[accountIndex] << endl;
+                    cout << "Account Number: " << accountNumbers[accountIndex] << endl;
+                    cout << "1. Account Name: " << names[accountIndex] << endl;
                     cout << "2. Account Password: " << passwords[accountIndex] << endl << endl;
 
-                    cout << "Click [1] to rename your account name or [2] to change your password. Click any other key to exit account settings\n";
+                    cout << "Click [1] to rename your account name or [2] to change your password. Click any other key to exit account settings: ";
                     cin >> choice;
 
                     if (choice == '1') {
                         system("cls");
                         string name;
-                        cout << "Enter your new account name:";
+                        cout << "Enter your new account name: ";
                         getline(cin.ignore(), name);
 
                         names[accountIndex] = name;
@@ -857,7 +935,7 @@ int main() {
 
                 } else {
 
-                    cout << "\nYou have entered incorrect password too many times so we can't grant deposition action now. Click 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
+                    cout << "\nYou have entered incorrect password too many times so we can't grant deposition action now. Click [Y] if you want to go to main menu, click any other key to quit.\n";
                     cin >> choice;
 
                     if (choice == 'Y' || choice == 'y') {
@@ -871,7 +949,7 @@ int main() {
 
             case 7: {
                 system("cls");
-                cout << "Current currency rates:\n";
+                cout << "Current currency rates\n";
 
                 cout << "+" << string(20, '-') << "+" << string(20, '-') << "+\n";
                 cout << "|   " << setw(17) << left << "Currency" << "|   " << setw(17) << left << "Birr" << "|\n";
@@ -892,21 +970,21 @@ int main() {
                     int currencyFrom, currencyTo;
                     double amount, toBirr, finalResult;
 
-                    cout << "Choose the currency you want to convert from:\n";
-
                     cout << "[1] US Dollar\n";
                     cout << "[2] Pound\n";
                     cout << "[3] Euro\n";
                     cout << "[4] Birr\n\n";
+
+                    cout << "Choose the currency you want to convert from: ";
                     cin >> currencyFrom;
 
-                    cout << "Choose the currency you want to convert to:\n";
 
                     cout << "[1] US Dollar\n";
                     cout << "[2] Pound\n";
                     cout << "[3] Euro\n";
                     cout << "[4] Birr\n\n";
 
+                    cout << "Choose the currency you want to convert to: ";
                     cin >> currencyTo;
 
                     cout << "Enter the amount of money you want to convert: ";
@@ -916,23 +994,25 @@ int main() {
                     toBirr = amount * rates[currencyFrom - 1];
                     finalResult = toBirr / rates[currencyTo - 1];
 
-                    cout << "fr " << finalResult;
+                    cout << "The calculated amount is: " << finalResult;
 
+                } else if (choice == 'M' || choice == 'm') {
+                    goto menuIterator;
+                } else {
+                    break;
                 }
             }
             break;
 
             case 8: {
                 system("cls");
-
+                cout << "System transaction log\n";
                 bool passwordValidated = false; int passwordTries = 4;
                 string adminPasswordInput;
-                cout << "Enter administrator password: ";
-
 
                 while (!passwordValidated && passwordTries > 0) {
-                    cout << "Please enter the password of your account: \n";
-                    getline(cin.ignore(), adminPasswordInput);
+                    cout << "Please enter the password of your account: ";
+                    (passwordTries == 4) ? getline(cin.ignore(), adminPasswordInput) : getline(cin, adminPasswordInput);
 
                     if (adminPassword == adminPasswordInput) {
                         passwordValidated = true;
@@ -950,7 +1030,6 @@ int main() {
                 char choice;
 
                 if (passwordValidated) {
-
                     const int columnWidth = 15;
                     int typeWidth = 0, amountWidth = 0, dateWidth = 0, accountWidth = 0;
 
@@ -975,7 +1054,6 @@ int main() {
                     cout << "|" << setw(typeWidth + 7) << right << "Transaction Type" << "|" << setw(accountWidth) << right << "Account Number" << "|" <<  setw(amountWidth) << right << "Amount" << "|" << setw(dateWidth) << right << "Date" << "|\n";
                     cout << "+" << string(typeWidth + 7, '-') << "+" << string(accountWidth + 7, '-') << "+" << string(amountWidth, '-') << "+" << string(dateWidth, '-') << "+\n";
 
-
                     for (int i = 0; i < currentTransactionIndex; i++) {
                             cout << "|" << setw(typeWidth + 7) << left << transactionType[i] << "|" << setw(accountWidth + 7) << right << transactionAccountNumbers[i] << "|" << setw(amountWidth) << right << transactionMoneyAmount[i] << "|" << setw(dateWidth) << left << transactionDates[i] << "|\n";
                     }
@@ -983,19 +1061,18 @@ int main() {
                     // Print table footer
                     cout << "+" << string(typeWidth + 7, '-') << "+" << string(accountWidth + 7, '-') << "+" << string(amountWidth, '-') << "+" << string(dateWidth, '-') << "+\n";
 
-                    cout << "Click 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
+                    cout << "Click [Y] if you want to go to main menu, else click any key to quit: ";
                     cin >> choice;
 
                     if (choice == 'Y' || choice == 'y') {
                         goto menuIterator;
                     } else {
-                        exit;
+                        break;
                     }
 
 
                 } else {
-
-                    cout << "\nYou have entered incorrect password too many times so we can't grant deposition action now. Click 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
+                    cout << "\nYou have entered incorrect password too many times so we can't grant deposition action now. Click [Y] if you want to go to main menu, else click any key if you want to quit: ";
                     cin >> choice;
 
                     if (choice == 'Y' || choice == 'y') {
@@ -1010,18 +1087,25 @@ int main() {
 
             case 9: {
                 system("cls");
-
                 cout << "Setup recurring transactions\n";
 
                 bool accountFound = false;
                 int accountIndex;
                 char choice;
 
-
                 while (accountFound == 0) {
-                    cout << "Enter the account number you want to transfer from: ";
+                    recurringAccountIterator: cout << "Enter the account number you want to transfer from: ";
                     int accountNumber;
                     cin >> accountNumber;
+
+                    if (cin.fail()) {
+                        cout << "Invalid input. Please enter a number." << endl;
+                        // Clear the error state of cin
+                        cin.clear();
+                        // Discard any remaining input in the buffer
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        goto recurringAccountIterator;
+                    }
 
                     for (int i = 0; i < currentAccountIndex; i++) {
                         if (accountNumbers[i] == accountNumber) {
@@ -1033,7 +1117,7 @@ int main() {
 
                     if (accountFound == 0) {
                         cout << "The account number you entered is not found.\n";
-                        cout << "If you want to re-enter your account number press [Y] else if you want to go to main menu click any key:";
+                        cout << "If you want to re-enter your account number press [Y] else if you want to go to main menu click any key: ";
                         cin >> choice;
 
                         if (!(choice == 'Y' || choice == 'y')) {
@@ -1047,8 +1131,7 @@ int main() {
                 while (!passwordValidated && passwordTries > 0) {
                     accountPassword = "";
                     cout << "Please enter the password of your account: ";
-
-                    passwordTries == 4 ? getline(cin.ignore(), accountPassword) : getline(cin, accountPassword);
+                    (passwordTries == 4) ? getline(cin.ignore(), accountPassword) : getline(cin, accountPassword);
 
                     if (accountPassword == passwords[accountIndex]) {
                         passwordValidated = true;
@@ -1071,9 +1154,18 @@ int main() {
                     int receiverAccountIndex, transactionFrequency, transactionTime;
 
                     while (receiverAccountFound == 0) {
-                        cout << "Enter the receiver's account number: ";
+                        recurringReceiverIterator: cout << "Enter the receiver's account number: ";
                         int receiverAccountNumber;
                         cin >> receiverAccountNumber;
+
+                        if (cin.fail()) {
+                            cout << "Invalid input. Please enter a number." << endl;
+                            // Clear the error state of cin
+                            cin.clear();
+                            // Discard any remaining input in the buffer
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                            goto recurringReceiverIterator;
+                        }
 
                         for (int i = 0; i < currentAccountIndex; i++) {
                             if (accountNumbers[i] == receiverAccountNumber) {
@@ -1084,21 +1176,26 @@ int main() {
                         }
 
                         if (receiverAccountFound == 0) {
-                            cout << "The account number you entered is not found, try again.\n";
+                            cout << "The account number you entered is not found.\n";
+                            cout << "If you want to re-enter your account number press [Y] else if you want to go to main menu click any key: ";
+                            cin >> choice;
+
+                            if (!(choice == 'Y' || choice == 'y')) {
+                                goto menuIterator;
+                            }
                         }
                     }
 
                     cout << "Enter the amount of money you want to transfer every time: ";
                     cin >> moneyAmount;
 
-
                     recurIterator: cout << "[1] Every day\n[2] Every week\n[3] Every month\n";
-                    cout << "Enter the frequency between each payment:\n";
-
+                    cout << "Enter the frequency between each payment: ";
                     cin >> transactionFrequency;
 
                     switch (transactionFrequency) {
                         case 1: {
+                            system("cls");
                             cout << "Enter the hour for the payment (use 24-hr format like '21' etc): ";
                             cin >> transactionTime;
 
@@ -1120,9 +1217,19 @@ int main() {
                         break;
 
                         case 2: {
-                            cout << "[1] Sunday\n[2] Monday\n[3] Tuesday\n[4] Wednesday\n[5] Thursday\n[6] Friday\n[7] Saturday\n";
+                            system("cls");
+                            transactionTimeIterator: cout << "[1] Sunday\n[2] Monday\n[3] Tuesday\n[4] Wednesday\n[5] Thursday\n[6] Friday\n[7] Saturday\n";
                             cout << "Enter the week day for the payment to recur (from 1-7 as above stated): ";
                             cin >> transactionTime;
+
+                            if (cin.fail()) {
+                                cout << "Invalid input. Please enter a number." << endl;
+                                // Clear the error state of cin
+                                cin.clear();
+                                // Discard any remaining input in the buffer
+                                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                                goto transactionTimeIterator;
+                            }
 
                             recurringPaymentFrom[currentRecurringIndex] = accountIndex;
                             recurringPaymentTo[currentRecurringIndex] = receiverAccountIndex;
@@ -1132,7 +1239,7 @@ int main() {
 
                             currentRecurringIndex++;
 
-                            cout << "A payment of" << moneyAmount << "birr " << "has been successfully to recur every week-day at day" << transactionTime << " from the account number " << accountNumbers[accountIndex] << " to " << names[receiverAccountIndex] << "\nChoose [Y] if you want to go to main menu or any other key if you want to quit: ";
+                            cout << "A payment of" << moneyAmount << " birr " << "has been successfully to recur every week-day at day" << transactionTime << " from the account number " << accountNumbers[accountIndex] << " to " << names[receiverAccountIndex] << "\nChoose [Y] if you want to go to main menu or any other key if you want to quit: ";
                             cin >> choice;
 
                             if (choice == 'Y' || choice == 'y') {
@@ -1142,9 +1249,19 @@ int main() {
                         break;
 
                         case 3: {
-                            cout << "[1] January\n[2] February\n[3] March\n[4] April\n[5] May\n[6] June\n[7] July\n[8] August\n[9] September\n[10] October\n[11] November\n[12] December";
+                            system("cls");
+                            transactionTime: cout << "[1] January\n[2] February\n[3] March\n[4] April\n[5] May\n[6] June\n[7] July\n[8] August\n[9] September\n[10] October\n[11] November\n[12] December";
                             cout << "Enter the month for the payment to recur (from 1-12 as above stated): ";
                             cin >> transactionTime;
+
+                            if (cin.fail()) {
+                                cout << "Invalid input. Please enter a number." << endl;
+                                // Clear the error state of cin
+                                cin.clear();
+                                // Discard any remaining input in the buffer
+                                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                                goto transactionTime;
+                            }
 
                             recurringPaymentFrom[currentRecurringIndex] = accountIndex;
                             recurringPaymentTo[currentRecurringIndex] = receiverAccountIndex;
@@ -1176,7 +1293,7 @@ int main() {
                     }
 
                 } else {
-                    cout << "\nYou have entered incorrect password too many times so we can't grant deposition action now. Click 'Y' if you want to go to main menu else click 'N' if you want to quit.\n";
+                    cout << "\nYou have entered incorrect password too many times so we can't grant deposition action now. Click [Y] if you want to go to main menu else click any key if you want to quit: ";
                     cin >> choice;
 
                     if (choice == 'Y' || choice == 'y') {
@@ -1190,8 +1307,18 @@ int main() {
             break;
 
 
-            default:
-                break;
+            default: {
+                char choice;
+                system("cls");
+                cout << "You have entered invalid option, If you want to try again click [Y], if you want to exit click any key: ";
+                cin >> choice;
+
+                if (choice == 'Y' || choice == 'y') {
+                    goto menuIterator;
+                } else {
+                    break;
+                }
+            }
         }
 
         break;
