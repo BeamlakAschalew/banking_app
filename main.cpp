@@ -1,8 +1,6 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
-#include <random>
-#include <windows.h>
 
 using namespace std;
 
@@ -28,7 +26,6 @@ int main() {
 
     // Transaction related arrays
     int transactionAccountNumbers[maxTransactions] = {0}; double transactionMoneyAmount[maxTransactions]; string transactionType[maxTransactions];
-    string transactionDates[maxTransactions];
 
     // Recurring transaction related arrays
     int recurringPaymentFrom[maxRecurringTransactions], recurringPaymentTo[maxRecurringTransactions], recurringPaymentFrequency[maxRecurringTransactions], recurringPaymentTime[maxRecurringTransactions];
@@ -51,15 +48,10 @@ int main() {
 
     menuIterator: while (navigateMenu) {
 
-    time_t currentTime = time(0);
-
-    // Convert the current time to a struct tm
-    tm* localTime = localtime(&currentTime);
-
     // Get the day of the week as an integer (0 - Sunday, 1 - Monday, ...)
-    int dayOfWeek = localTime->tm_wday;
-    int hourOfDay = localTime->tm_hour;
-    int dayOfMonth = localTime->tm_mday;
+    int dayOfWeek = 5;
+    int hourOfDay = 8;
+    int dayOfMonth = 16;
 
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -72,7 +64,7 @@ int main() {
     string currentDayName = dayNames[dayOfWeek];
 
     // Loop through all the accounts and add an interest based on the balance
-    if (currentDayName == "Saturday") {
+    if (currentDayName == "Friday") {
         for (int i = 0; i < currentAccountIndex; i++) {
             balances[i] += (balances[i] * (interestRate / 100));
         }
@@ -89,27 +81,15 @@ int main() {
                     balances[recurringPaymentFrom[i]] -= recurringMoneyAmount[i];
                     balances[recurringPaymentTo[i]] += recurringMoneyAmount[i];
 
-                    ostringstream ossDate;
-                    ostringstream ossTime;
-
-                    string dateTimeNow;
-                    currentTime = time(0);
-                    localTime = localtime(&currentTime);
-                    ossDate << put_time(localTime, "%d-%m-%Y ");
-                    ossTime << put_time(localTime, "%I:%M %p");
-                    dateTimeNow = ossDate.str() + ossTime.str();
-
                     transactionMoneyAmount[currentTransactionIndex] = -recurringMoneyAmount[i];
                     transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentFrom[i]];
                     transactionType[currentTransactionIndex] = "Recurring Transfer";
-                    transactionDates[currentTransactionIndex] = dateTimeNow;
 
                     currentTransactionIndex++;
 
                     transactionMoneyAmount[currentTransactionIndex] = recurringMoneyAmount[i];
                     transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentTo[i]];
                     transactionType[currentTransactionIndex] = "Recurring Transfer";
-                    transactionDates[currentTransactionIndex] = dateTimeNow;
 
                     currentTransactionIndex++;
                 }
@@ -120,27 +100,15 @@ int main() {
                     balances[recurringPaymentFrom[i]] -= recurringMoneyAmount[i];
                     balances[recurringPaymentTo[i]] += recurringMoneyAmount[i];
 
-                    ostringstream ossDate;
-                    ostringstream ossTime;
-
-                    string dateTimeNow;
-                    currentTime = time(0);
-                    localTime = localtime(&currentTime);
-                    ossDate << put_time(localTime, "%d-%m-%Y ");
-                    ossTime << put_time(localTime, "%I:%M %p");
-                    dateTimeNow = ossDate.str() + ossTime.str();
-
                     transactionMoneyAmount[currentTransactionIndex] = -recurringMoneyAmount[i];
                     transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentFrom[i]];
                     transactionType[currentTransactionIndex] = "Recurring Transfer";
-                    transactionDates[currentTransactionIndex] = dateTimeNow;
 
                     currentTransactionIndex++;
 
                     transactionMoneyAmount[currentTransactionIndex] = recurringMoneyAmount[i];
                     transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentTo[i]];
                     transactionType[currentTransactionIndex] = "Recurring Transfer";
-                    transactionDates[currentTransactionIndex] = dateTimeNow;
 
                     currentTransactionIndex++;
                 }
@@ -150,27 +118,15 @@ int main() {
                         balances[recurringPaymentFrom[i]] -= recurringMoneyAmount[i];
                         balances[recurringPaymentTo[i]] += recurringMoneyAmount[i];
 
-                        ostringstream ossDate;
-                        ostringstream ossTime;
-
-                        string dateTimeNow;
-                        currentTime = time(0);
-                        localTime = localtime(&currentTime);
-                        ossDate << put_time(localTime, "%d-%m-%Y ");
-                        ossTime << put_time(localTime, "%I:%M %p");
-                        dateTimeNow = ossDate.str() + ossTime.str();
-
                         transactionMoneyAmount[currentTransactionIndex] = -recurringMoneyAmount[i];
                         transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentFrom[i]];
                         transactionType[currentTransactionIndex] = "Recurring Transfer";
-                        transactionDates[currentTransactionIndex] = dateTimeNow;
 
                         currentTransactionIndex++;
 
                         transactionMoneyAmount[currentTransactionIndex] = recurringMoneyAmount[i];
                         transactionAccountNumbers[currentTransactionIndex] = accountNumbers[recurringPaymentTo[i]];
                         transactionType[currentTransactionIndex] = "Recurring Transfer";
-                        transactionDates[currentTransactionIndex] = dateTimeNow;
 
                         currentTransactionIndex++;
                     }
@@ -223,30 +179,23 @@ int main() {
 
             balances[currentAccountIndex] = 0;
 
-            // Initialize randomizer engine
-            random_device rd;
-            mt19937 engine(rd());
+            srand(time(0));
 
-            // Specify the randomizer to return values between 10000 and 99999
-            uniform_int_distribution<int> distribution(10000, 99999);
-
-            // Pass the engine variable into the distribution to generate a random number and assign it to the randomGenerated integer variable
-            int randomGenerated = distribution(engine),
-                    currentRand = randomGenerated;
+            int randomGenerated = rand();
             bool uniqueFound = false;
 
             // Iterate through all currently registered accounts and check if the newly generated account number doesn't exist, if so add it for the new user
             for (int i = 0; i < currentAccountIndex + 1; i++) {
-                if (accountNumbers[i] != currentRand) {
-                    accountNumbers[currentAccountIndex] = currentRand;
+                if (accountNumbers[i] != randomGenerated) {
+                    accountNumbers[currentAccountIndex] = randomGenerated;
                     uniqueFound = true;
                 }
 
                 while (!uniqueFound) {
-                    randomGenerated = distribution(engine);
-                    currentRand = randomGenerated;
-                    if (accountNumbers[i] != currentRand) {
-                        accountNumbers[currentAccountIndex] = currentRand;
+                    srand(time(0));
+                    randomGenerated = rand();
+                    if (accountNumbers[i] != randomGenerated) {
+                        accountNumbers[currentAccountIndex] = randomGenerated;
                         uniqueFound = true;
                     }
                 }
@@ -282,18 +231,9 @@ int main() {
             char choice;
 
             while (!accountFound) {
-                accountIterator: cout << "Enter your account number: ";
+                cout << "Enter your account number: ";
                 int accountNumber;
                 cin >> accountNumber;
-
-                if (cin.fail()) {
-                    cout << "Invalid input. Please enter a number." << endl;
-                    // Clear the error state of cin
-                    cin.clear();
-                    // Discard any remaining input in the buffer
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    goto accountIterator;
-                }
 
                 // Iterate through all accounts and assign the 'i' where the account number is found to accountIndex
                 for (int i = 0; i < currentAccountIndex; i++) {
@@ -316,7 +256,7 @@ int main() {
             }
 
             system("cls");
-            cout << "Welcome back, " << names[accountIndex] << "!\n";
+            cout << "Deposit money for, " << names[accountIndex] << ".\n";
             amountIterator: double moneyAmount, convertedAmount; int currency;
 
             cout << "[1] US Dollar\n";
@@ -328,49 +268,17 @@ int main() {
             cout << "Enter the currency you have: ";
             cin >> currency;
 
-            if (cin.fail()) {
-                cout << "Invalid input. Please enter a number." << endl;
-                // Clear the error state of cin
-                cin.clear();
-                // Discard any remaining input in the buffer
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                goto amountIterator;
-            }
-
             cout << "Enter the amount of money you want to deposit: ";
             cin >> moneyAmount;
-
-            if (cin.fail()) {
-                cout << "Invalid input. Please enter a number." << endl;
-                // Clear the error state of cin
-                cin.clear();
-                // Discard any remaining input in the buffer
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                goto accountIterator;
-            }
 
             if (moneyAmount >= 0.1) {
                 convertedAmount = moneyAmount * rates[currency - 1];
                 balances[accountIndex] += convertedAmount;
 
-                // String manipulating data types
-                ostringstream ossDate;
-                ostringstream ossTime;
-
-                string dateTimeNow;
-
-                // Get the system's current date/time
-                currentTime = time(0);
-                localTime = /* Convert the system time into a tm structure */ localtime(&currentTime);
-                ossDate << /* Format local time into a string */ put_time(localTime, "%d-%m-%Y ");
-                ossTime << put_time(localTime, "%I:%M %p");
-                dateTimeNow = ossDate.str() + ossTime.str();
-
                 // Assign values to arrays respectively
                 transactionMoneyAmount[currentTransactionIndex] = convertedAmount;
                 transactionAccountNumbers[currentTransactionIndex] = accountNumbers[accountIndex];
                 transactionType[currentTransactionIndex] = "Deposit";
-                transactionDates[currentTransactionIndex] = dateTimeNow;
 
                 currentTransactionIndex++;
 
@@ -400,20 +308,11 @@ int main() {
             char choice;
 
             while (accountFound == 0) {
-                withdrawAccountIterator: cout << "Enter your account number: ";
+                cout << "Enter your account number: ";
                 int accountNumber;
                 cin >> accountNumber;
 
-                if (cin.fail()) {
-                    cout << "Invalid input. Please enter a number." << endl;
-                    // Clear the error state of cin
-                    cin.clear();
-                    // Discard any remaining input in the buffer
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    goto withdrawAccountIterator;
-                }
-
-                for (int i = 0; i < maxAccounts; i++) {
+                for (int i = 0; i < currentAccountIndex; i++) {
                     if (accountNumbers[i] == accountNumber) {
                         accountFound = true;
                         accountIndex = i;
@@ -456,15 +355,6 @@ int main() {
                 cout << "Enter the amount of money you want to withdraw: ";
                 cin >> moneyAmount;
 
-                if (cin.fail()) {
-                    cout << "Invalid input. Please enter a number." << endl;
-                    // Clear the error state of cin
-                    cin.clear();
-                    // Discard any remaining input in the buffer
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    goto withdrawAmountIterator;
-                }
-
                 if ((balances[accountIndex] - moneyAmount) <= 25) {
                     cout << "Your balance is insufficient!" << " Your balance is " << balances[accountIndex] << "birr\n";
                     cout << "If you want to enter amount again click [Y], if you want to go to main menu press any key: ";
@@ -479,20 +369,9 @@ int main() {
                 } else {
                     balances[accountIndex] -= moneyAmount;
 
-                    ostringstream ossDate;
-                    ostringstream ossTime;
-
-                    string dateTimeNow;
-                    currentTime = time(0);
-                    localTime = localtime(&currentTime);
-                    ossDate << put_time(localTime, "%d-%m-%Y ");
-                    ossTime << put_time(localTime, "%I:%M %p");
-                    dateTimeNow = ossDate.str() + ossTime.str();
-
                     transactionMoneyAmount[currentTransactionIndex] = -moneyAmount;
                     transactionAccountNumbers[currentTransactionIndex] = accountNumbers[accountIndex];
                     transactionType[currentTransactionIndex] = "Withdrawal";
-                    transactionDates[currentTransactionIndex] = dateTimeNow;
 
                     currentTransactionIndex++;
 
@@ -531,20 +410,11 @@ int main() {
             char choice;
 
             while (accountFound == 0) {
-                transferAccountIterator: cout << "Enter your account number: ";
+                cout << "Enter your account number: ";
                 int accountNumber;
                 cin >> accountNumber;
 
-                if (cin.fail()) {
-                    cout << "Invalid input. Please enter a number." << endl;
-                    // Clear the error state of cin
-                    cin.clear();
-                    // Discard any remaining input in the buffer
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    goto transferAccountIterator;
-                }
-
-                for (int i = 0; i < maxAccounts; i++) {
+                for (int i = 0; i < currentAccountIndex; i++) {
                     if (accountNumbers[i] == accountNumber) {
                         accountFound = true;
                         accountIndex = i;
@@ -591,18 +461,9 @@ int main() {
                 int receiverAccountIndex;
 
                 while (receiverAccountFound == 0) {
-                    receiverAccountIterate: cout << "Enter the receiver's account number: ";
+                    cout << "Enter the receiver's account number: ";
                     int receiverAccountNumber;
                     cin >> receiverAccountNumber;
-
-                    if (cin.fail()) {
-                        cout << "Invalid input. Please enter a number." << endl;
-                        // Clear the error state of cin
-                        cin.clear();
-                        // Discard any remaining input in the buffer
-                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                        goto receiverAccountIterate;
-                    }
 
                     for (int i = 0; i < currentAccountIndex; i++) {
                         if (accountNumbers[i] == receiverAccountNumber) {
@@ -640,27 +501,15 @@ int main() {
                     balances[accountIndex] -= moneyAmount;
                     balances[receiverAccountIndex] += moneyAmount;
 
-                    ostringstream ossDate;
-                    ostringstream ossTime;
-
-                    string dateTimeNow;
-                    currentTime = time(0);
-                    localTime = localtime(&currentTime);
-                    ossDate << put_time(localTime, "%d-%m-%Y ");
-                    ossTime << put_time(localTime, "%I:%M %p");
-                    dateTimeNow = ossDate.str() + ossTime.str();
-
                     transactionMoneyAmount[currentTransactionIndex] = -moneyAmount;
                     transactionAccountNumbers[currentTransactionIndex] = accountNumbers[accountIndex];
                     transactionType[currentTransactionIndex] = "Transfer";
-                    transactionDates[currentTransactionIndex] = dateTimeNow;
 
                     currentTransactionIndex++;
 
                     transactionMoneyAmount[currentTransactionIndex] = moneyAmount;
                     transactionAccountNumbers[currentTransactionIndex] = accountNumbers[receiverAccountIndex];
                     transactionType[currentTransactionIndex] = "Transfer";
-                    transactionDates[currentTransactionIndex] = dateTimeNow;
 
                     currentTransactionIndex++;
 
@@ -701,20 +550,11 @@ int main() {
             char choice;
 
             while (!accountFound) {
-                transactionAccountIterator: cout << "Enter your account number: ";
+                cout << "Enter your account number: ";
                 int accountNumber;
                 cin >> accountNumber;
 
-                if (cin.fail()) {
-                    cout << "Invalid input. Please enter a number." << endl;
-                    // Clear the error state of cin
-                    cin.clear();
-                    // Discard any remaining input in the buffer
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    goto transactionAccountIterator;
-                }
-
-                for (int i = 0; i < maxAccounts; i++) {
+                for (int i = 0; i < currentAccountIndex; i++) {
                     if (accountNumbers[i] == accountNumber) {
                         accountFound = true;
                         accountIndex = i;
@@ -753,52 +593,26 @@ int main() {
             }
 
             if (passwordValidated) {
-                const int columnWidth = 15;
-                int typeWidth = 0;
-                int amountWidth = 0;
-                int dateWidth = 0;
                 system("cls");
                 cout << "Welcome back, " << names[accountIndex] << "!\n";
 
-                // Calculate maximum column widths
-                for (int i = 0; i < currentTransactionIndex; i++) {
-                    typeWidth = max(typeWidth, static_cast<int>(transactionType[i].length()));
-                    amountWidth = max(amountWidth, static_cast<int>(to_string(transactionMoneyAmount[i]).length()));
-                    dateWidth = max(dateWidth, static_cast<int>(transactionDates[i].length()));
-                }
-
-                // Add some padding to the maximum widths
-                typeWidth += 2;
-                amountWidth += 2;
-                dateWidth += 2;
-
                 // Print table header
-                cout << "+" << string(typeWidth + 7, '-') << "+" << string(amountWidth, '-') << "+" << string(dateWidth, '-') << "+\n";
-                cout << "|" << setw(typeWidth + 7) << right << "Transaction Type" << "|" << setw(amountWidth) << right << "Amount" << "|" << setw(dateWidth) << right << "Date" << "|\n";
-                cout << "+" << string(typeWidth + 7, '-') << "+" << string(amountWidth, '-') << "+" << string(dateWidth, '-') << "+\n";
+                cout << "+" << string(20, '-') << "+" << string(15, '-') << "+\n";
+                cout << "|" << setw(20) << left << "Transaction Type" << "|" << setw(15) << left << "Amount" << "|\n";
+                cout << "+" << string(20, '-') << "+" << string(15, '-') << "+\n";
 
-                HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
                 for (int i = 0; i < currentTransactionIndex; i++) {
                     // Display transaction records where account number equals the signed-in user account number
                     if (transactionAccountNumbers[i] == accountNumbers[accountIndex]) {
-                        cout << "|" << setw(typeWidth + 7) << left << transactionType[i] << "|";
-                        // Change the console text to red if money is lost from the account or green if a money is desposited or trasferred in to the account
-                        if (transactionMoneyAmount[i] < 0) {
-                            SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
-                        } else {
-                            SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
-                        }
-                        cout  << setw(amountWidth) << right << transactionMoneyAmount[i];
-                        SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-                        cout << "|";
-
-                        cout  << setw(dateWidth) << left << transactionDates[i] << "|\n";
+                        cout << "|" << setw(20) << left << transactionType[i] << "|";
+                        cout  << setw(15) << left << transactionMoneyAmount[i];
+                        cout << "|\n";
                     }
                 }
 
                 // Print table footer
-                cout << "+" << string(typeWidth + 7, '-') << "+" << string(amountWidth, '-') << "+" << string(dateWidth, '-') << "+\n";
+                cout << "+" << string(20, '-') << "+" << string(15, '-') << "+\n";
 
                 cout << "Account balance: " << balances[accountIndex] << " birr" << endl;
                 cout << "Click [Y] if you want to go to main menu, click any other key to quit: ";
@@ -833,20 +647,11 @@ int main() {
             char choice;
 
             while (!accountFound) {
-                modifyAccountIterator: cout << "Enter your account number: ";
+                cout << "Enter your account number: ";
                 int accountNumber;
                 cin >> accountNumber;
 
-                if (cin.fail()) {
-                    cout << "Invalid input. Please enter a number." << endl;
-                    // Clear the error state of cin
-                    cin.clear();
-                    // Discard any remaining input in the buffer
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    goto modifyAccountIterator;
-                }
-
-                for (int i = 0; i < maxAccounts; i++) {
+                for (int i = 0; i < currentAccountIndex; i++) {
                     if (accountNumbers[i] == accountNumber) {
                         accountFound = true;
                         accountIndex = i;
@@ -985,7 +790,7 @@ int main() {
                 toBirr = amount * rates[currencyFrom - 1];
                 finalResult = toBirr / rates[currencyTo - 1];
 
-                cout << "The calculated amount is: " << finalResult;
+                cout << "The calculated amount is: " << finalResult << endl;
                 cout << "If you want to go to main menu click [Y] else if you want to quit click any key: ";
                 cin >> choice;
 
@@ -1034,31 +839,17 @@ int main() {
 
                 cout << "Welcome back, Admin!\n";
 
-                // Calculate maximum column widths
-                for (int i = 0; i < currentTransactionIndex; i++) {
-                    typeWidth = max(typeWidth, static_cast<int>(transactionType[i].length()));
-                    amountWidth = max(amountWidth, static_cast<int>(to_string(transactionMoneyAmount[i]).length()));
-                    dateWidth = max(dateWidth, static_cast<int>(transactionDates[i].length()));
-                    accountWidth = max(accountWidth, static_cast<int>(to_string(transactionAccountNumbers[i]).length()));
-                }
-
-                // Add some padding to the maximum widths
-                typeWidth += 2;
-                amountWidth += 2;
-                dateWidth += 2;
-                accountWidth += 2;
-
                 // Print table header
-                cout << "+" << string(typeWidth + 7, '-') << "+" << string(accountWidth + 7, '-') << "+" << string(amountWidth, '-') << "+" << string(dateWidth, '-') << "+\n";
-                cout << "|" << setw(typeWidth + 7) << right << "Transaction Type" << "|" << setw(accountWidth) << right << "Account Number" << "|" <<  setw(amountWidth) << right << "Amount" << "|" << setw(dateWidth) << right << "Date" << "|\n";
-                cout << "+" << string(typeWidth + 7, '-') << "+" << string(accountWidth + 7, '-') << "+" << string(amountWidth, '-') << "+" << string(dateWidth, '-') << "+\n";
+                cout << "+" << string(20, '-') << "+" << string(15, '-') << "+" << string(15, '-') << "+\n";
+                cout << "|" << setw(20) << left << "Transaction Type" << "|" << setw(15) << left << "Account Number" << "|" <<  setw(15) << left << "Amount" << "|\n";
+                cout << "+" << string(20, '-') << "+" << string( 15, '-') << "+" << string(15, '-') << "+\n";
 
                 for (int i = 0; i < currentTransactionIndex; i++) {
-                    cout << "|" << setw(typeWidth + 7) << left << transactionType[i] << "|" << setw(accountWidth + 7) << right << transactionAccountNumbers[i] << "|" << setw(amountWidth) << right << transactionMoneyAmount[i] << "|" << setw(dateWidth) << left << transactionDates[i] << "|\n";
+                    cout << "|" << setw(20) << left << transactionType[i] << "|" << setw(15) << left << transactionAccountNumbers[i] << "|" << setw(15) << left << transactionMoneyAmount[i] << "|\n";
                 }
 
                 // Print table footer
-                cout << "+" << string(typeWidth + 7, '-') << "+" << string(accountWidth + 7, '-') << "+" << string(amountWidth, '-') << "+" << string(dateWidth, '-') << "+\n";
+                cout << "+" << string(20, '-') << "+" << string(15, '-') << "+" << string(15, '-') << "+\n";
 
                 cout << "Click [Y] if you want to go to main menu, else click any key to quit: ";
                 cin >> choice;
@@ -1093,18 +884,9 @@ int main() {
             char choice;
 
             while (accountFound == 0) {
-                recurringAccountIterator: cout << "Enter the account number you want to transfer from: ";
+                cout << "Enter the account number you want to transfer from: ";
                 int accountNumber;
                 cin >> accountNumber;
-
-                if (cin.fail()) {
-                    cout << "Invalid input. Please enter a number." << endl;
-                    // Clear the error state of cin
-                    cin.clear();
-                    // Discard any remaining input in the buffer
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                    goto recurringAccountIterator;
-                }
 
                 for (int i = 0; i < currentAccountIndex; i++) {
                     if (accountNumbers[i] == accountNumber) {
@@ -1153,18 +935,9 @@ int main() {
                 int receiverAccountIndex, transactionFrequency, transactionTime;
 
                 while (receiverAccountFound == 0) {
-                    recurringReceiverIterator: cout << "Enter the receiver's account number: ";
+                    cout << "Enter the receiver's account number: ";
                     int receiverAccountNumber;
                     cin >> receiverAccountNumber;
-
-                    if (cin.fail()) {
-                        cout << "Invalid input. Please enter a number." << endl;
-                        // Clear the error state of cin
-                        cin.clear();
-                        // Discard any remaining input in the buffer
-                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                        goto recurringReceiverIterator;
-                    }
 
                     for (int i = 0; i < currentAccountIndex; i++) {
                         if (accountNumbers[i] == receiverAccountNumber) {
@@ -1217,18 +990,9 @@ int main() {
 
                     case 2: {
                         system("cls");
-                        transactionTimeIterator: cout << "[1] Sunday\n[2] Monday\n[3] Tuesday\n[4] Wednesday\n[5] Thursday\n[6] Friday\n[7] Saturday\n";
+                        cout << "[1] Sunday\n[2] Monday\n[3] Tuesday\n[4] Wednesday\n[5] Thursday\n[6] Friday\n[7] Saturday\n";
                         cout << "Enter the week day for the payment to recur (from 1-7 as above stated): ";
                         cin >> transactionTime;
-
-                        if (cin.fail()) {
-                            cout << "Invalid input. Please enter a number." << endl;
-                            // Clear the error state of cin
-                            cin.clear();
-                            // Discard any remaining input in the buffer
-                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                            goto transactionTimeIterator;
-                        }
 
                         recurringPaymentFrom[currentRecurringIndex] = accountIndex;
                         recurringPaymentTo[currentRecurringIndex] = receiverAccountIndex;
@@ -1249,18 +1013,9 @@ int main() {
 
                     case 3: {
                         system("cls");
-                        transactionTime: cout << "[1] January\n[2] February\n[3] March\n[4] April\n[5] May\n[6] June\n[7] July\n[8] August\n[9] September\n[10] October\n[11] November\n[12] December";
+                        cout << "[1] January\n[2] February\n[3] March\n[4] April\n[5] May\n[6] June\n[7] July\n[8] August\n[9] September\n[10] October\n[11] November\n[12] December";
                         cout << "Enter the month for the payment to recur (from 1-12 as above stated): ";
                         cin >> transactionTime;
-
-                        if (cin.fail()) {
-                            cout << "Invalid input. Please enter a number." << endl;
-                            // Clear the error state of cin
-                            cin.clear();
-                            // Discard any remaining input in the buffer
-                            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                            goto transactionTime;
-                        }
 
                         recurringPaymentFrom[currentRecurringIndex] = accountIndex;
                         recurringPaymentTo[currentRecurringIndex] = receiverAccountIndex;
